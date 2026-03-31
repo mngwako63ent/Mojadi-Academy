@@ -17,7 +17,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-6 flex items-center justify-between text-left group"
       >
-        <span className="text-lg font-bold group-hover:text-secondary transition-colors">{question}</span>
+        <span className="text-lg font-bold group-hover:text-secondary dark:group-hover:text-[#E6B981] transition-colors">{question}</span>
         <div className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", isOpen ? "bg-secondary text-white" : "bg-black/5 dark:bg-white/5")}>
           {isOpen ? <Minus size={18} /> : <Plus size={18} />}
         </div>
@@ -30,7 +30,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-primary/60 dark:text-white/60 leading-relaxed">
+            <p className="pb-6 text-primary/60 dark:text-sage leading-relaxed">
               {answer}
             </p>
           </motion.div>
@@ -67,7 +67,7 @@ const Contact = () => {
     <div className="pt-32 pb-32 max-w-7xl mx-auto px-6">
       <div className="text-center space-y-4 mb-20">
         <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tight">Contact Us</h1>
-        <p className="text-primary/60 dark:text-white/60 max-w-2xl mx-auto">
+        <p className="text-primary/60 dark:text-sage max-w-2xl mx-auto">
           Have questions about our courses? Want to learn more about agricultural education? We're here to help!
         </p>
       </div>
@@ -84,12 +84,12 @@ const Contact = () => {
               { icon: Clock, title: 'Business Hours', content: 'Mon - Fri 08:00 AM - 5:00 PM' },
             ].map((item) => (
               <div key={item.title} className="flex gap-6 items-center glass p-6 rounded-2xl">
-                <div className="w-12 h-12 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 bg-secondary/10 text-secondary dark:text-[#E6B981] rounded-2xl flex items-center justify-center shrink-0">
                   <item.icon size={24} />
                 </div>
                 <div>
                   <h4 className="font-bold">{item.title}</h4>
-                  <p className="text-primary/60 dark:text-white/60">{item.content}</p>
+                  <p className="text-primary/60 dark:text-sage">{item.content}</p>
                 </div>
               </div>
             ))}
@@ -107,7 +107,7 @@ const Contact = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-white/40">Full Name *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Full Name *</label>
               <input
                 required
                 type="text"
@@ -118,7 +118,7 @@ const Contact = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-white/40">Email Address *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Email Address *</label>
               <input
                 required
                 type="email"
@@ -129,7 +129,7 @@ const Contact = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-white/40">Phone Number</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Phone Number</label>
               <input
                 type="tel"
                 className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all"
@@ -137,7 +137,7 @@ const Contact = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-white/40">Subject *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Subject *</label>
               <input
                 required
                 type="text"
@@ -148,7 +148,7 @@ const Contact = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-white/40">Message *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Message *</label>
               <textarea
                 required
                 rows={5}
@@ -162,7 +162,7 @@ const Contact = () => {
               disabled={isSubmitting}
               className={cn(
                 "w-full btn-premium flex items-center justify-center gap-2 text-white transition-all",
-                isSuccess ? "bg-green-500" : "bg-primary hover:bg-accent"
+                isSuccess ? "bg-green-500" : "bg-primary dark:bg-sage hover:bg-accent dark:hover:bg-sage-bright"
               )}
             >
               {isSubmitting ? "Sending..." : isSuccess ? "Message Sent!" : "Send Message"}
@@ -175,7 +175,7 @@ const Contact = () => {
       {/* FAQ */}
       <div className="text-center space-y-8">
         <h2 className="text-3xl font-display font-bold">Frequently Asked Questions</h2>
-        <p className="text-primary/60 dark:text-white/60">Find quick answers to common questions</p>
+        <p className="text-primary/60 dark:text-sage">Find quick answers to common questions</p>
         <div className="glass rounded-[2.5rem] p-8 max-w-3xl mx-auto">
           {faqs.map((faq) => (
             <FAQItem key={faq.question} {...faq} />

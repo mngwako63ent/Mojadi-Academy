@@ -12,11 +12,11 @@ const StatItem = ({ icon: Icon, value, label }: { icon: any, value: string, labe
     viewport={{ once: true }}
     className="flex flex-col items-center text-center p-8 glass rounded-3xl"
   >
-    <div className="w-16 h-16 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center mb-6">
+    <div className="w-16 h-16 bg-secondary/10 text-secondary dark:text-[#E6B981] rounded-2xl flex items-center justify-center mb-6">
       <Icon size={32} />
     </div>
     <span className="text-4xl font-display font-bold mb-2">{value}</span>
-    <span className="text-sm text-primary/60 dark:text-white/60 font-medium uppercase tracking-widest">{label}</span>
+    <span className="text-sm text-primary/60 dark:text-sage font-medium uppercase tracking-widest">{label}</span>
   </motion.div>
 );
 
@@ -48,16 +48,16 @@ const Home = () => {
             </div>
             <h1 className="text-6xl md:text-8xl font-display font-bold leading-[0.9] tracking-tight">
               Grow Your <br />
-              <span className="text-secondary">Farming</span> Success
+              <span className="text-secondary dark:text-[#E6B981]">Farming</span> Success
             </h1>
             <p className="text-xl text-white/80 max-w-lg leading-relaxed">
               Access world-class agricultural education from leading experts. Master sustainable practices, crop science, and agri-business management.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <Link to="/courses" className="btn-premium bg-secondary text-white hover:bg-earth shadow-xl shadow-secondary/20 flex items-center gap-2">
+              <Link to="/courses" className="btn-premium bg-secondary dark:bg-[#E6B981] text-white dark:text-neutral-dark hover:bg-earth dark:hover:bg-[#d4a870] shadow-xl shadow-secondary/20 dark:shadow-[#E6B981]/20 flex items-center gap-2">
                 Explore Courses <ArrowRight size={20} />
               </Link>
-              <Link to="/about" className="btn-premium bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20">
+              <Link to="/about" className="btn-premium bg-white/10 dark:bg-neutral-dark/50 backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/20 dark:hover:bg-neutral-dark/80 text-white">
                 Learn More
               </Link>
             </div>
@@ -82,9 +82,9 @@ const Home = () => {
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
                     <CheckCircle2 size={24} />
                   </div>
-                  <span className="font-bold text-primary dark:text-white">Certified</span>
+                  <span className="font-bold text-primary dark:text-sage">Certified</span>
                 </div>
-                <p className="text-xs text-primary/60 dark:text-white/60">Professional agricultural certification upon completion.</p>
+                <p className="text-xs text-primary/60 dark:text-sage">Professional agricultural certification upon completion.</p>
               </div>
             </div>
           </motion.div>
@@ -105,10 +105,10 @@ const Home = () => {
       <section className="max-w-7xl mx-auto px-6 space-y-12">
         <div className="flex flex-col md:row justify-between items-end gap-6">
           <div className="space-y-4">
-            <span className="text-secondary font-bold uppercase tracking-widest text-sm">Our Curriculum</span>
+            <span className="text-secondary dark:text-[#E6B981] font-bold uppercase tracking-widest text-sm">Our Curriculum</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold">Featured Courses</h2>
           </div>
-          <Link to="/courses" className="text-primary dark:text-white font-bold flex items-center gap-2 hover:text-secondary transition-colors">
+          <Link to="/courses" className="text-primary dark:text-sage font-bold flex items-center gap-2 hover:text-secondary dark:hover:text-[#E6B981] transition-colors">
             View All Courses <ArrowRight size={20} />
           </Link>
         </div>
@@ -124,7 +124,7 @@ const Home = () => {
       <section className="bg-primary py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center space-y-4 mb-20">
-            <span className="text-secondary font-bold uppercase tracking-widest text-sm">Success Stories</span>
+            <span className="text-secondary dark:text-[#E6B981] font-bold uppercase tracking-widest text-sm">Success Stories</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white">Trusted by Farmers</h2>
           </div>
 
@@ -138,7 +138,7 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl relative"
               >
-                <div className="text-secondary mb-6">
+                <div className="text-secondary dark:text-[#E6B981] mb-6">
                   {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" className="inline mr-1" />)}
                 </div>
                 <p className="text-white/80 italic mb-8 leading-relaxed">"{t.content}"</p>
@@ -146,7 +146,7 @@ const Home = () => {
                   <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" referrerPolicy="no-referrer" />
                   <div>
                     <h4 className="text-white font-bold">{t.name}</h4>
-                    <p className="text-white/40 text-xs">{t.role}</p>
+                    <p className="text-white/80 text-xs">{t.role}</p>
                   </div>
                 </div>
               </motion.div>

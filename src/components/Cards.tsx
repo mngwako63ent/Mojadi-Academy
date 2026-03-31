@@ -28,7 +28,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured }) => {
             referrerPolicy="no-referrer"
           />
           <div className="absolute top-4 left-4 flex gap-2">
-            <span className="px-3 py-1 bg-white/90 dark:bg-black/80 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider rounded-full text-primary">
+            <span className="px-3 py-1 bg-white/90 dark:bg-black/80 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider rounded-full text-primary dark:text-sage">
               {course.category}
             </span>
             <span className="px-3 py-1 bg-secondary text-white text-[10px] font-bold uppercase tracking-wider rounded-full">
@@ -43,16 +43,16 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured }) => {
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={14} fill={i < Math.floor(course.rating) ? "currentColor" : "none"} />
               ))}
-              <span className="text-xs font-bold ml-1 text-primary/60 dark:text-white/60">({course.rating})</span>
+              <span className="text-xs font-bold ml-1 text-primary/60 dark:text-sage">({course.rating})</span>
             </div>
-            <h3 className="text-xl font-display font-bold mb-3 group-hover:text-secondary transition-colors">
+            <h3 className="text-xl font-display font-bold mb-3 group-hover:text-secondary dark:group-hover:text-[#E6B981] transition-colors">
               {course.title}
             </h3>
-            <p className="text-sm text-primary/60 dark:text-white/60 line-clamp-2 mb-4">
+            <p className="text-sm text-primary/60 dark:text-sage line-clamp-2 mb-4">
               {course.description}
             </p>
             
-            <div className="flex items-center gap-4 text-xs text-primary/50 dark:text-white/40 mb-6">
+            <div className="flex items-center gap-4 text-xs text-primary/50 dark:text-sage mb-6">
               <div className="flex items-center gap-1">
                 <Clock size={14} />
                 <span>{course.duration}</span>
@@ -66,12 +66,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured }) => {
 
           <div className="flex items-center justify-between pt-4 border-t border-black/5 dark:border-white/5">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-widest text-primary/40 dark:text-white/40">Price</span>
-              <span className="text-lg font-bold text-primary dark:text-white">
+              <span className="text-[10px] uppercase tracking-widest text-primary/40 dark:text-sage">Price</span>
+              <span className="text-lg font-bold text-primary dark:text-sage">
                 {course.price === 0 ? 'Free' : `R${course.price.toLocaleString()}`}
               </span>
             </div>
-            <button className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center group-hover:bg-secondary transition-colors">
+            <button className="w-10 h-10 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark flex items-center justify-center group-hover:bg-secondary dark:group-hover:bg-[#E6B981] transition-colors">
               <ArrowRight size={20} />
             </button>
           </div>
@@ -101,8 +101,8 @@ export const InstructorCard: React.FC<InstructorCardProps> = ({ instructor }) =>
         />
       </div>
       <h4 className="text-xl font-display font-bold mb-1">{instructor.name}</h4>
-      <p className="text-sm text-secondary font-medium mb-4">{instructor.expertise}</p>
-      <p className="text-sm text-primary/60 dark:text-white/60 line-clamp-3 mb-6">
+      <p className="text-sm text-secondary dark:text-[#E6B981] font-medium mb-4">{instructor.expertise}</p>
+      <p className="text-sm text-primary/60 dark:text-sage line-clamp-3 mb-6">
         {instructor.bio}
       </p>
       <div className="flex justify-center gap-4">

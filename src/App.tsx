@@ -7,6 +7,7 @@ import Courses from './pages/Courses';
 import CourseDetail from './pages/CourseDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import Login from './pages/Login';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/courses/:id" element={<PageWrapper><CourseDetail /></PageWrapper>} />
               <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
               <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
+              <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
             </Routes>
           </AnimatePresence>
         </main>

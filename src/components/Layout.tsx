@@ -1,28 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon, ChevronRight, Leaf } from 'lucide-react';
+import { Menu, X, Sun, Moon, ChevronRight, Leaf, LogOut, User } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useTheme } from 'next-themes';
+import { useAuth } from './AuthContext';
+import { auth } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, userProfile } = useAuth();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/');
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
-  }, [isDark]);
+  };
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -30,6 +39,8 @@ export const Navbar = () => {
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
+
+  if (!mounted) return null;
 
   return (
     <nav
@@ -43,8 +54,8 @@ export const Navbar = () => {
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white group-hover:rotate-12 transition-transform duration-300">
             <Leaf size={24} />
           </div>
-          <span className="text-2xl font-display font-bold tracking-tight text-primary dark:text-white">
-            Mojadi<span className="text-secondary">Academy</span>
+          <span className="text-2xl font-display font-bold tracking-tight text-primary dark:text-sage">
+            Mojadi<span className="text-secondary dark:text-[#E6B981]">Academy</span>
           </span>
         </Link>
 
@@ -55,10 +66,10 @@ export const Navbar = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                'text-sm font-medium transition-colors hover:text-secondary',
+                'text-sm font-medium transition-colors hover:text-secondary dark:hover:text-[#E6B981]',
                 location.pathname === link.path 
-                  ? 'text-secondary' 
-                  : 'text-primary/70 dark:text-white/70'
+                  ? 'text-secondary dark:text-[#E6B981]' 
+                  : 'text-primary/70 dark:text-sage'
               )}
             >
               {link.name}
@@ -67,27 +78,50 @@ export const Navbar = () => {
           
           <div className="flex items-center gap-4 ml-4">
             <button
-              onClick={() => setIsDark(!isDark)}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
             >
-              {isDark ? <Sun size={20} className="text-white" /> : <Moon size={20} />}
+              {theme === 'dark' ? <Sun size={20} className="text-white" /> : <Moon size={20} />}
             </button>
-            <Link
-              to="/courses"
-              className="btn-premium bg-primary text-white hover:bg-accent shadow-lg shadow-primary/20"
-            >
-              Start Learning
-            </Link>
+            
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-1.5 glass rounded-full">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName || ''} className="w-6 h-6 rounded-full" />
+                  ) : (
+                    <User size={16} className="text-primary/60 dark:text-sage" />
+                  )}
+                  <span className="text-sm font-medium text-primary dark:text-sage max-w-[100px] truncate">
+                    {user.displayName || user.email}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 rounded-full hover:bg-red-500/10 text-red-500 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut size={20} />
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="btn-premium bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent dark:hover:bg-sage-bright shadow-lg shadow-primary/20 dark:shadow-sage-dark/20"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
 
         {/* Mobile Toggle */}
         <div className="md:hidden flex items-center gap-4">
           <button
-            onClick={() => setIsDark(!isDark)}
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10"
           >
-            {isDark ? <Sun size={20} className="text-white" /> : <Moon size={20} />}
+            {theme === 'dark' ? <Sun size={20} className="text-white" /> : <Moon size={20} />}
           </button>
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -114,19 +148,29 @@ export const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={cn(
                   'text-lg font-medium py-2 border-b border-black/5 dark:border-white/5',
-                  location.pathname === link.path ? 'text-secondary' : 'text-primary/70 dark:text-white/70'
+                  location.pathname === link.path ? 'text-secondary dark:text-[#E6B981]' : 'text-primary/70 dark:text-sage'
                 )}
               >
                 {link.name}
               </Link>
             ))}
-            <Link
-              to="/courses"
-              onClick={() => setIsOpen(false)}
-              className="btn-premium bg-primary text-white text-center mt-4"
-            >
-              Start Learning
-            </Link>
+            
+            {user ? (
+              <button
+                onClick={() => { handleLogout(); setIsOpen(false); }}
+                className="btn-premium bg-red-500 text-white text-center mt-4 flex items-center justify-center gap-2"
+              >
+                <LogOut size={20} /> Sign Out
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="btn-premium bg-primary dark:bg-sage hover:bg-accent dark:hover:bg-sage-bright text-white dark:text-neutral-dark text-center mt-4"
+              >
+                Sign In
+              </Link>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -140,11 +184,11 @@ export const Footer = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="space-y-6">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary">
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary dark:text-sage">
               <Leaf size={24} />
             </div>
-            <span className="text-2xl font-display font-bold tracking-tight">
-              Mojadi<span className="text-secondary">Academy</span>
+            <span className="text-2xl font-display font-bold tracking-tight dark:text-sage">
+              Mojadi<span className="text-secondary dark:text-[#E6B981]">Academy</span>
             </span>
           </Link>
           <p className="text-white/70 leading-relaxed">
@@ -197,7 +241,7 @@ export const Footer = () => {
         </div>
       </div>
       
-      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/10 flex flex-col md:row justify-between items-center gap-4 text-sm text-white/50">
+      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/10 flex flex-col md:row justify-between items-center gap-4 text-sm text-white/70">
         <p>© 2026 AgriAcademy. All rights reserved.</p>
         <div className="flex gap-8">
           <a href="#" className="hover:text-white">Privacy Policy</a>
