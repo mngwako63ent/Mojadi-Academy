@@ -33,7 +33,12 @@ const Login = () => {
       navigate('/');
     } catch (err: any) {
       console.error("Google Sign-In Error:", err);
-      setError(err.message);
+      const errorCode = err.code || (err.cause && (err.cause as any).code);
+      if (errorCode === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized in the Firebase Console. Please add your live URL to the "Authorized domains" list in Firebase Authentication settings.');
+      } else {
+        setError(err.message || 'Google Sign-In failed. Please check the console for details.');
+      }
     } finally {
       setLoading(false);
     }
@@ -79,6 +84,8 @@ const Login = () => {
             setError('Password must be at least 6 characters long');
           } else if (errorCode === 'auth/invalid-email') {
             setError('Invalid email address format.');
+          } else if (errorCode === 'auth/unauthorized-domain') {
+            setError('This domain is not authorized in the Firebase Console. Please add your live URL to the "Authorized domains" list in Firebase Authentication settings.');
           } else {
             setError(err.message || 'An error occurred during sign up. Please check the console for details.');
           }
@@ -106,6 +113,8 @@ const Login = () => {
             setError('Email/Password authentication is not enabled in the Firebase Console.');
           } else if (errorCode === 'auth/user-disabled') {
             setError('This account has been disabled.');
+          } else if (errorCode === 'auth/unauthorized-domain') {
+            setError('This domain is not authorized in the Firebase Console. Please add your live URL to the "Authorized domains" list in Firebase Authentication settings.');
           } else {
             setError(err.message || 'An error occurred during sign in. Please check the console for details.');
           }

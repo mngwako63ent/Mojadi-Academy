@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Navbar, Footer } from './components/Layout';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
@@ -8,6 +8,8 @@ import CourseDetail from './pages/CourseDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
+import { useAuth } from './components/AuthContext';
+import { Leaf } from 'lucide-react';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -29,6 +31,22 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function App() {
+  const { isAuthReady } = useAuth();
+
+  if (!isAuthReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-neutral-dark">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          className="text-primary dark:text-sage"
+        >
+          <Leaf size={48} />
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <ScrollToTop />
