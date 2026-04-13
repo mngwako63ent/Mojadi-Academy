@@ -36,6 +36,7 @@ export const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Courses', path: '/courses' },
+    { name: 'Dashboard', path: '/dashboard', auth: true },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
@@ -61,7 +62,7 @@ export const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+          {navLinks.filter(link => !link.auth || user).map((link) => (
             <Link
               key={link.name}
               to={link.path}
@@ -141,7 +142,7 @@ export const Navbar = () => {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-full left-0 right-0 glass border-t border-white/10 md:hidden p-6 flex flex-col gap-4"
           >
-            {navLinks.map((link) => (
+            {navLinks.filter(link => !link.auth || user).map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
@@ -231,18 +232,18 @@ export const Footer = () => {
             </li>
             <li className="flex items-center gap-3">
               <div className="w-5 h-5 bg-white/10 rounded flex items-center justify-center" />
-              <span>084 520 2073</span>
+              <span>086 123 4571</span>
             </li>
             <li className="flex items-center gap-3">
               <div className="w-5 h-5 bg-white/10 rounded flex items-center justify-center" />
-              <span>Mojadifarmholding@gmail.com</span>
+              <span>mojadiacademy@gmail.com</span>
             </li>
           </ul>
         </div>
       </div>
       
       <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/10 flex flex-col md:row justify-between items-center gap-4 text-sm text-white/70">
-        <p>© 2026 AgriAcademy. All rights reserved.</p>
+        <p>© 2026 Mojadi Academy. All rights reserved.</p>
         <div className="flex gap-8">
           <a href="#" className="hover:text-white">Privacy Policy</a>
           <a href="#" className="hover:text-white">Terms of Service</a>

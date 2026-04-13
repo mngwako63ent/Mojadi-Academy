@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Star, Clock, BarChart, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Course } from '../data/mockData';
+import { Course } from '../data/courses';
 import { cn } from '../lib/utils';
 
 interface CourseCardProps {
@@ -84,32 +84,3 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured }) => {
 interface InstructorCardProps {
   instructor: any;
 }
-
-export const InstructorCard: React.FC<InstructorCardProps> = ({ instructor }) => {
-  return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      className="glass rounded-2xl p-6 text-center group"
-    >
-      <div className="relative w-32 h-32 mx-auto mb-6">
-        <div className="absolute inset-0 bg-secondary rounded-full rotate-6 group-hover:rotate-12 transition-transform duration-500" />
-        <img
-          src={instructor.image}
-          alt={instructor.name}
-          className="relative w-full h-full object-cover rounded-full border-4 border-white dark:border-neutral-dark"
-          referrerPolicy="no-referrer"
-        />
-      </div>
-      <h4 className="text-xl font-display font-bold mb-1">{instructor.name}</h4>
-      <p className="text-sm text-secondary dark:text-[#E6B981] font-medium mb-4">{instructor.expertise}</p>
-      <p className="text-sm text-primary/60 dark:text-sage line-clamp-3 mb-6">
-        {instructor.bio}
-      </p>
-      <div className="flex justify-center gap-4">
-        {/* Social placeholders */}
-        <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center hover:bg-secondary hover:text-white transition-all cursor-pointer" />
-        <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center hover:bg-secondary hover:text-white transition-all cursor-pointer" />
-      </div>
-    </motion.div>
-  );
-};

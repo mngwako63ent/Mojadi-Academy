@@ -2,13 +2,52 @@ import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, Star, Clock, BarChart, CheckCircle2, Users, BookOpen, Video, Award, MessageSquare } from 'lucide-react';
-import { courses, instructors } from '../data/mockData';
+import { courses } from '../data/courses';
+import { useAuth } from '../components/AuthContext';
+import { db } from '../lib/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const course = courses.find((c) => c.id === id);
-  const instructor = instructors.find((i) => i.name === course?.instructor);
+  const [isEnrolled, setIsEnrolled] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkEnrollment = async () => {
+      if (user && id) {
+        const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', id);
+        const enrollmentSnap = await getDoc(enrollmentRef);
+        setIsEnrolled(enrollmentSnap.exists());
+      }
+      setLoading(false);
+    };
+    checkEnrollment();
+  }, [user, id]);
+
+  const handleEnroll = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: `/courses/${id}` } });
+      return;
+    }
+
+    if (course) {
+      try {
+        await setDoc(doc(db, 'users', user.uid, 'enrollments', course.id), {
+          courseId: course.id,
+          enrolledAt: new Date().toISOString(),
+          progress: 0,
+          completedModules: []
+        });
+        setIsEnrolled(true);
+        navigate('/dashboard');
+      } catch (error) {
+        console.error("Error enrolling in course:", error);
+      }
+    }
+  };
 
   if (!course) {
     return (
@@ -78,13 +117,16 @@ const CourseDetail = () => {
             <h2 className="text-4xl font-bold mb-6">
               {course.price === 0 ? 'Free' : `R${course.price.toLocaleString()}`}
             </h2>
-            <button className="w-full btn-premium bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent dark:hover:bg-sage-bright text-lg py-4 mb-6 rounded-full">
-              Enroll Now
+            <button 
+              onClick={isEnrolled ? () => navigate(`/learning/${course.id}/${course.modules[0].id}`) : handleEnroll}
+              className="w-full btn-premium bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent dark:hover:bg-sage-bright text-lg py-4 mb-6 rounded-full"
+            >
+              {isEnrolled ? 'Continue Learning' : 'Enroll Now'}
             </button>
             <div className="space-y-4 text-sm text-primary/70 dark:text-sage">
               <p className="font-bold text-primary dark:text-sage">This course includes:</p>
-              <div className="flex items-center gap-3"><BookOpen size={18} /> {course.modules} Modules</div>
-              <div className="flex items-center gap-3"><Video size={18} /> {course.lessons} Video Lessons</div>
+              <div className="flex items-center gap-3"><BookOpen size={18} /> {course.modules.length} Modules</div>
+              <div className="flex items-center gap-3"><Video size={18} /> Video Lessons</div>
               <div className="flex items-center gap-3"><Clock size={18} /> {course.duration} Duration</div>
               <div className="flex items-center gap-3"><Award size={18} /> Certificate of Completion</div>
               <div className="flex items-center gap-3"><MessageSquare size={18} /> Community Access</div>
@@ -92,23 +134,33 @@ const CourseDetail = () => {
           </div>
         </div>
 
-        {/* Overview */}
+        {/* Modules List */}
         <div className="glass p-8 rounded-[2rem]">
-          <h3 className="text-2xl font-bold mb-4">Course Overview</h3>
-          <p className="text-primary/80 dark:text-sage leading-relaxed">{course.description} This comprehensive beginner level course is designed for farmers who want to excel in introduction to sustainable farming. Over 4 weeks, you'll gain in-depth knowledge and practical skills through 8 carefully structured modules containing 24 detailed lessons.</p>
-        </div>
-
-        {/* Instructor */}
-        {instructor && (
-          <div className="glass p-8 rounded-[2rem] flex items-start gap-6">
-            <img src={instructor.image} alt={instructor.name} className="w-24 h-24 rounded-full object-cover" referrerPolicy="no-referrer" />
-            <div>
-              <h3 className="text-2xl font-bold mb-1">About Your Instructor</h3>
-              <p className="text-secondary dark:text-[#E6B981] font-bold mb-2">{instructor.name} <span className="text-primary/60 dark:text-sage font-normal">- {instructor.expertise}</span></p>
-              <p className="text-primary/80 dark:text-sage leading-relaxed">{instructor.bio}</p>
-            </div>
+          <h3 className="text-2xl font-bold mb-6">Course Curriculum</h3>
+          <div className="space-y-4">
+            {course.modules.map((module, index) => (
+              <div key={module.id} className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-primary/10 text-primary dark:text-sage rounded-full flex items-center justify-center font-bold">
+                    {index + 6}
+                  </div>
+                  <div>
+                    <h4 className="font-bold">{module.title}</h4>
+                    <p className="text-sm text-primary/60 dark:text-sage">{module.duration}</p>
+                  </div>
+                </div>
+                {isEnrolled && (
+                  <button 
+                    onClick={() => navigate(`/learning/${course.id}/${module.id}`)}
+                    className="text-secondary dark:text-[#E6B981] font-bold hover:underline"
+                  >
+                    Start
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

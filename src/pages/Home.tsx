@@ -2,23 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, BookOpen, Award, CheckCircle2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { courses, testimonials } from '../data/mockData';
+import { courses, testimonials } from '../data/courses';
 import { CourseCard } from '../components/Cards';
-
-const StatItem = ({ icon: Icon, value, label }: { icon: any, value: string, label: string }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    className="flex flex-col items-center text-center p-8 glass rounded-3xl"
-  >
-    <div className="w-16 h-16 bg-secondary/10 text-secondary dark:text-[#E6B981] rounded-2xl flex items-center justify-center mb-6">
-      <Icon size={32} />
-    </div>
-    <span className="text-4xl font-display font-bold mb-2">{value}</span>
-    <span className="text-sm text-primary/60 dark:text-sage font-medium uppercase tracking-widest">{label}</span>
-  </motion.div>
-);
 
 const Home = () => {
   return (
@@ -51,7 +36,7 @@ const Home = () => {
               <span className="text-secondary dark:text-[#E6B981]">Farming</span> Success
             </h1>
             <p className="text-xl text-white/80 max-w-lg leading-relaxed">
-              Access world-class agricultural education from leading experts. Master sustainable practices, crop science, and agri-business management.
+              Access world-class agricultural education from Mojadi Academy. Master sustainable practices, crop science, and agri-business management.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
               <Link to="/courses" className="btn-premium bg-secondary dark:bg-[#E6B981] text-white dark:text-neutral-dark hover:bg-earth dark:hover:bg-[#d4a870] shadow-xl shadow-secondary/20 dark:shadow-[#E6B981]/20 flex items-center gap-2">
@@ -91,16 +76,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <StatItem icon={Users} value="2,500+" label="Active Students" />
-          <StatItem icon={Award} value="12" label="Expert Instructors" />
-          <StatItem icon={BookOpen} value="45+" label="Courses" />
-          <StatItem icon={CheckCircle2} value="95%" label="Success Rate" />
-        </div>
-      </section>
-
       {/* Featured Courses */}
       <section className="max-w-7xl mx-auto px-6 space-y-12">
         <div className="flex flex-col md:row justify-between items-end gap-6">
@@ -114,7 +89,7 @@ const Home = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {courses.slice(0, 3).map((course) => (
+          {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>

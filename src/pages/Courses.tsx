@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, SlidersHorizontal, LayoutGrid, List } from 'lucide-react';
-import { courses } from '../data/mockData';
+import { courses } from '../data/courses';
 import { CourseCard } from '../components/Cards';
 import { cn } from '../lib/utils';
 
@@ -17,7 +17,7 @@ const Courses = () => {
   const filteredCourses = useMemo(() => {
     return courses.filter(course => {
       const matchesSearch = course.title.toLowerCase().includes(search.toLowerCase()) || 
-                           course.instructor.toLowerCase().includes(search.toLowerCase());
+                           course.description.toLowerCase().includes(search.toLowerCase());
       const matchesCategory = category === 'All' || course.category === category;
       const matchesLevel = level === 'All' || course.level === level;
       return matchesSearch && matchesCategory && matchesLevel;

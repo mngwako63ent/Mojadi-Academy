@@ -1,8 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Leaf, Target, History, Award } from 'lucide-react';
-import { instructors } from '../data/mockData';
-import { InstructorCard } from '../components/Cards';
 
 const About = () => {
   return (
@@ -20,7 +18,7 @@ const About = () => {
             Cultivating Knowledge for a <span className="text-secondary dark:text-[#E6B981]">Sustainable</span> Future
           </h1>
           <p className="text-lg text-primary/70 dark:text-sage leading-relaxed">
-            Founded in 2015, AgriAcademy began with a simple mission: to bridge the gap between traditional farming wisdom and modern agricultural science. We believe that every farmer, regardless of scale, deserves access to world-class education.
+            Founded in 2015, Mojadi Academy began with a simple mission: to bridge the gap between traditional farming wisdom and modern agricultural science. We believe that every farmer, regardless of scale, deserves access to world-class education.
           </p>
           <div className="grid grid-cols-2 gap-8">
             <div className="space-y-2">
@@ -88,23 +86,6 @@ const About = () => {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Instructors Section */}
-      <section className="max-w-7xl mx-auto px-6 space-y-20">
-        <div className="text-center space-y-4">
-          <span className="text-secondary dark:text-[#E6B981] font-bold uppercase tracking-widest text-sm">Expert Faculty</span>
-          <h2 className="text-4xl md:text-5xl font-display font-bold">Meet Your Instructors</h2>
-          <p className="text-primary/60 dark:text-sage max-w-2xl mx-auto">
-            Learn from industry leaders, researchers, and successful commercial farmers who are passionate about sharing their expertise.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {instructors.map((instructor) => (
-            <InstructorCard key={instructor.id} instructor={instructor} />
-          ))}
         </div>
       </section>
     </div>

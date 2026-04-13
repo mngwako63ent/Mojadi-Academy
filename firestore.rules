@@ -31,8 +31,17 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && 
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-         (request.auth.token.email == "M.ngwako63@gmail.com" && request.auth.token.email_verified == true));
+        ((exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+         (request.auth.token.email == "m.ngwako63ent@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEnrollment(data) {
+      return data.keys().hasAll(['courseId', 'enrolledAt', 'progress', 'completedModules']) &&
+             data.courseId is string &&
+             data.enrolledAt is string &&
+             data.progress is number &&
+             data.completedModules is list;
     }
 
     function isValidUser(data) {
@@ -52,6 +61,13 @@ service cloud.firestore {
       allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == 'user';
       allow update: if isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == resource.data.role;
       allow delete: if isAdmin();
+
+      match /enrollments/{courseId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create: if isOwner(userId) && isValidEnrollment(request.resource.data);
+        allow update: if isOwner(userId) && isValidEnrollment(request.resource.data);
+        allow delete: if isAdmin();
+      }
     }
   }
 }

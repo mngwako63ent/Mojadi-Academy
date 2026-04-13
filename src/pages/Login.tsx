@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, LogIn, UserPlus, Camera } from 'lucide-react';
 
@@ -16,21 +16,24 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const from = (location.state as any)?.from || '/';
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigate('/');
+        navigate(from, { replace: true });
       }
     });
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate, from]);
 
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
       setError('');
       await signInWithPopup(auth, googleProvider);
-      navigate('/');
+      navigate(from, { replace: true });
     } catch (err: any) {
       console.error("Google Sign-In Error:", err);
       const errorCode = err.code || (err.cause && (err.cause as any).code);
@@ -70,7 +73,8 @@ const Login = () => {
           if (name) {
             await updateProfile(userCredential.user, { displayName: name });
           }
-          console.log("Profile updated, navigating to home...");
+          console.log("Profile updated, navigating...");
+          navigate(from, { replace: true });
         } catch (err: any) {
           console.error("Detailed Sign-Up Error:", err);
           const errorCode = err.code || (err.cause && (err.cause as any).code);
@@ -96,7 +100,8 @@ const Login = () => {
         console.log("Attempting sign in with:", email);
         try {
           await signInWithEmailAndPassword(auth, email, password);
-          console.log("Sign in successful, navigating to home...");
+          console.log("Sign in successful, navigating...");
+          navigate(from, { replace: true });
         } catch (err: any) {
           console.error("Detailed Sign-In Error:", err);
           const errorCode = err.code || (err.cause && (err.cause as any).code);

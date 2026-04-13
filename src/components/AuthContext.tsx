@@ -22,8 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       
-      // For now just authenticate, don't save user info as requested
-      /*
       if (currentUser) {
         // Fetch or create user profile in Firestore
         const userDocRef = doc(db, 'users', currentUser.uid);
@@ -51,7 +49,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setUserProfile(null);
       }
-      */
       
       setLoading(false);
       setIsAuthReady(true);

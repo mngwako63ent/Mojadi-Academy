@@ -8,6 +8,8 @@ import CourseDetail from './pages/CourseDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
+import Learning from './pages/Learning';
+import Dashboard from './pages/Dashboard';
 import { useAuth } from './components/AuthContext';
 import { Leaf } from 'lucide-react';
 
@@ -61,6 +63,8 @@ export default function App() {
               <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
               <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
               <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+              <Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
+              <Route path="/learning/:courseId/:moduleId" element={<PageWrapper><Learning /></PageWrapper>} />
             </Routes>
           </AnimatePresence>
         </main>
