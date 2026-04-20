@@ -117,6 +117,59 @@
   .btn-premium {
     @apply relative overflow-hidden px-6 py-3 rounded-full font-medium transition-all duration-300 active:scale-95;
   }
+
+  /* Table Styles */
+  .prose table {
+    @apply w-full border-collapse my-8 text-sm md:text-base;
+  }
+
+  .prose thead {
+    @apply bg-primary/5 dark:bg-white/5;
+  }
+
+  .prose th {
+    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-left font-bold text-primary dark:text-sage;
+  }
+
+  .prose td {
+    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-primary/80 dark:text-sage/80;
+  }
+
+  .prose tr:nth-child(even) {
+    @apply bg-black/[0.02] dark:bg-white/[0.02];
+  }
+
+  .prose tr:hover {
+    @apply bg-secondary/5 dark:bg-secondary/10 transition-colors;
+  }
+
+  /* List and Content Readability */
+  .prose ul {
+    @apply list-disc list-outside ml-6 space-y-2 my-4;
+  }
+
+  .prose ol {
+    @apply list-decimal list-outside ml-6 space-y-2 my-4;
+  }
+
+  .prose li {
+    @apply pl-2 leading-relaxed;
+  }
+
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    @apply font-display font-bold mt-8 mb-4 tracking-tight;
+  }
+
+  .prose h4 { @apply text-xl text-secondary; }
+
+  /* Responsive Table Container */
+  .table-container {
+    @apply overflow-x-auto w-full my-8 rounded-2xl border border-black/5 dark:border-white/5;
+  }
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');

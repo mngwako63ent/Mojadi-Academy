@@ -5,7 +5,7 @@ import { courses } from '../data/courses';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, HelpCircle, Award, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, HelpCircle, Award, BookOpen, ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '../lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -23,10 +23,28 @@ const Learning = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
+  const [writtenAnswers, setWrittenAnswers] = useState<Record<string, string>>({});
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [quizPassed, setQuizPassed] = useState(false);
+  const [score, setScore] = useState(0);
+  const [showBreakdown, setShowBreakdown] = useState(false);
+
+  useEffect(() => {
+    // Reset assessment state when changing modules
+    setShowQuiz(false);
+    setQuizAttempt(0);
+    setSelectedAnswers({});
+    setWrittenAnswers({});
+    setQuizSubmitted(false);
+    setQuizPassed(false);
+    setScore(0);
+    setShowBreakdown(false);
+    setCurrentTopicIndex(-1);
+  }, [moduleId]);
   const [loading, setLoading] = useState(true);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
+
+  const MAX_ATTEMPTS = 3;
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -73,7 +91,26 @@ const Learning = () => {
   };
 
   const handleQuizSubmit = async () => {
-    const allCorrect = module.quiz.every(q => selectedAnswers[q.id] === q.correctAnswer);
+    let allCorrect = false;
+    let currentScore = 0;
+    
+    // Check multiple choice quiz
+    if (module.quiz && module.quiz.length > 0) {
+      const correctCount = module.quiz.filter(q => selectedAnswers[q.id] === q.correctAnswer).length;
+      currentScore = Math.round((correctCount / module.quiz.length) * 100);
+      allCorrect = currentScore >= 80;
+    } else if (module.assessment) {
+      // For written assessments, we check if they've provided some content
+      const totalQuestions = module.assessment.sections ? 
+        module.assessment.sections.reduce((acc, s) => acc + (s.questions?.length || 0), 0) : 
+        1;
+      
+      const answeredCount = Object.values(writtenAnswers).filter(a => a.trim().length > 10).length;
+      currentScore = Math.round((answeredCount / totalQuestions) * 100);
+      allCorrect = currentScore >= 80;
+    }
+    
+    setScore(currentScore);
     setQuizPassed(allCorrect);
     setQuizSubmitted(true);
     setQuizAttempt(prev => prev + 1);
@@ -93,6 +130,10 @@ const Learning = () => {
   const handleRetryQuiz = () => {
     setQuizSubmitted(false);
     setSelectedAnswers({});
+    setWrittenAnswers({});
+    setQuizPassed(false);
+    setScore(0);
+    setShowBreakdown(false);
   };
 
   const handleNextModule = () => {
@@ -130,18 +171,16 @@ const Learning = () => {
                         key={m.id}
                         onClick={() => {
                           navigate(`/learning/${courseId}/${m.id}`);
-                          setCurrentTopicIndex(-1);
-                          setShowQuiz(false);
                         }}
                         className={cn(
-                          "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all",
+                          "w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all",
                           m.id === moduleId ? "bg-primary text-white" : "hover:bg-black/5 dark:hover:bg-white/5"
                         )}
                       >
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold">
+                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold mt-0.5">
                           {idx + 6}
                         </div>
-                        <span className="text-sm font-medium truncate flex-grow">{m.title.replace('Module ' + (idx + 6) + ': ', '')}</span>
+                        <span className="text-sm font-medium leading-snug flex-grow">{m.title.replace('Module ' + (idx + 6) + ': ', '')}</span>
                         {completedModules.includes(m.id) && (
                           <CheckCircle2 size={16} className="text-green-500" />
                         )}
@@ -166,11 +205,11 @@ const Learning = () => {
                   // Module Overview
                   <div className="space-y-8">
                     <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-secondary dark:text-[#E6B981] font-bold text-sm uppercase tracking-widest">
+                      <div className="flex flex-wrap items-center gap-2 text-secondary dark:text-[#E6B981] font-bold text-sm uppercase tracking-widest">
                         <BookOpen size={16} /> Module Overview
                       </div>
-                      <h1 className="text-3xl md:text-4xl font-display font-bold">{module.title}</h1>
-                      <p className="text-xl text-primary/70 dark:text-sage leading-relaxed">
+                      <h1 className="text-3xl md:text-4xl font-display font-bold text-balance">{module.title}</h1>
+                      <p className="text-xl text-primary/70 dark:text-sage leading-relaxed whitespace-pre-wrap">
                         {module.introduction}
                       </p>
                     </div>
@@ -200,13 +239,13 @@ const Learning = () => {
                   // Topic Content
                   <>
                     <div className="space-y-4">
-                      <div className="flex items-center gap-2 text-secondary dark:text-[#E6B981] font-bold text-sm uppercase tracking-widest">
+                      <div className="flex flex-wrap items-center gap-2 text-secondary dark:text-[#E6B981] font-bold text-sm uppercase tracking-widest">
                         <BookOpen size={16} /> Topic {currentTopicIndex + 1} of {module.topics.length}
                       </div>
-                      <h1 className="text-3xl md:text-4xl font-display font-bold">{currentTopic.title}</h1>
+                      <h1 className="text-3xl md:text-4xl font-display font-bold text-balance">{currentTopic.title}</h1>
                     </div>
 
-                    <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed">
+                    <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed overflow-x-auto">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {currentTopic.content}
                       </ReactMarkdown>
@@ -246,7 +285,76 @@ const Learning = () => {
 
                 {!quizSubmitted ? (
                   <div className="space-y-10">
-                    {module.quiz.map((q, idx) => (
+                    {module.assessment && (
+                      <div className="space-y-12">
+                        {module.assessment.description && (
+                          <div className="p-6 bg-secondary/5 border-l-4 border-secondary rounded-r-2xl prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed">
+                            <h4 className="text-xl font-bold text-secondary mb-2 flex items-center gap-2">
+                              <HelpCircle size={20} /> Instructions
+                            </h4>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {module.assessment.description}
+                            </ReactMarkdown>
+                          </div>
+                        )}
+                        {module.assessment.sections ? (
+                          module.assessment.sections.map((section: any, sIdx: number) => (
+                            <div key={sIdx} className="space-y-8">
+                              <div className="space-y-4">
+                                {section.description && (
+                                  <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed overflow-x-auto">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                      {section.description}
+                                    </ReactMarkdown>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="space-y-10">
+                                {section.questions.map((q: any, qIdx: number) => (
+                                  <div key={qIdx} className="space-y-4">
+                                    <div className="space-y-2">
+                                      <span className="font-bold text-lg text-secondary">{q.label}</span>
+                                      <p className="text-lg font-medium text-primary/90 dark:text-sage whitespace-pre-wrap">{q.text}</p>
+                                    </div>
+                                    <div className="relative group">
+                                      <div className="absolute top-4 left-4 text-xs font-italic text-black/30 dark:text-white/30 pointer-events-none italic">
+                                        Learner response:
+                                      </div>
+                                      <textarea 
+                                        className="w-full h-40 p-4 pt-10 rounded-xl bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 focus:border-secondary outline-none transition-all shadow-sm"
+                                        placeholder="Type your answer here (minimum 10 characters)..."
+                                        value={writtenAnswers[`${section.title}-${qIdx}`] || ''}
+                                        onChange={(e) => setWrittenAnswers(prev => ({ ...prev, [`${section.title}-${qIdx}`]: e.target.value }))}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          // Fallback for old content-based assessments
+                          <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed overflow-x-auto">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {module.assessment.content}
+                            </ReactMarkdown>
+                            
+                            <div className="mt-8 p-6 bg-secondary/5 border border-secondary/20 rounded-3xl">
+                              <h4 className="text-xl font-bold text-secondary mb-4">Your Response</h4>
+                              <textarea 
+                                className="w-full h-48 p-4 rounded-2xl bg-white dark:bg-black/20 border-2 border-black/5 dark:border-white/5 focus:border-secondary outline-none transition-all"
+                                placeholder="Type your assessment answers here..."
+                                value={writtenAnswers['fallback'] || ''}
+                                onChange={(e) => setWrittenAnswers(prev => ({ ...prev, 'fallback': e.target.value }))}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {module.quiz && module.quiz.length > 0 && module.quiz.map((q, idx) => (
                       <div key={q.id} className="space-y-6">
                         <h4 className="text-xl font-bold flex gap-3">
                           <span className="text-secondary dark:text-[#E6B981]">{idx + 1}.</span>
@@ -272,7 +380,10 @@ const Learning = () => {
                     ))}
                     <button
                       onClick={handleQuizSubmit}
-                      disabled={Object.keys(selectedAnswers).length < module.quiz.length}
+                      disabled={
+                        (module.quiz?.length > 0 && Object.keys(selectedAnswers).length < module.quiz.length) ||
+                        (module.assessment && Object.keys(writtenAnswers).length === 0)
+                      }
                       className="w-full py-4 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark font-bold text-lg hover:bg-accent disabled:opacity-50 transition-all"
                     >
                       Submit Assessment
@@ -287,12 +398,155 @@ const Learning = () => {
                         </div>
                         <h3 className="text-3xl font-bold text-green-600">Congratulations!</h3>
                         <p className="text-lg text-primary/70 dark:text-sage">You have successfully completed {module.title}.</p>
-                        <button
-                          onClick={handleNextModule}
-                          className="px-12 py-4 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark font-bold text-lg hover:bg-accent transition-all"
-                        >
-                          {moduleIndex === course.modules.length - 1 ? 'Finish Course' : 'Next Module'}
-                        </button>
+                        
+                        <div className="flex justify-center gap-8 text-sm font-bold uppercase tracking-wider">
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-primary/40 dark:text-white/40">Score</span>
+                            <span className="text-2xl text-primary dark:text-sage">{score}%</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-primary/40 dark:text-white/40">Attempts</span>
+                            <span className="text-2xl text-primary dark:text-sage">{quizAttempt}</span>
+                          </div>
+                        </div>
+
+                        <div className="pt-4">
+                          <button
+                            onClick={() => setShowBreakdown(!showBreakdown)}
+                            className="flex items-center gap-2 mx-auto px-6 py-2 rounded-full bg-black/5 dark:bg-white/5 text-sm font-bold border border-black/5 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all"
+                          >
+                            {showBreakdown ? (
+                              <>Hide Answer Breakdown <ChevronUp size={16} /></>
+                            ) : (
+                              <>Show Answer Breakdown <ChevronDown size={16} /></>
+                            )}
+                          </button>
+                        </div>
+
+                        <AnimatePresence>
+                          {showBreakdown && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden space-y-8"
+                            >
+                              {/* Summary Stats */}
+                              {module.quiz && module.quiz.length > 0 && (
+                                <div className="max-w-3xl mx-auto grid grid-cols-2 gap-4 mt-8">
+                                  <div className="p-4 bg-green-500/5 rounded-2xl border border-green-500/10 text-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-green-600 block mb-1">Passed Questions</span>
+                                    <span className="text-2xl font-bold text-green-600">
+                                      {module.quiz.filter(q => selectedAnswers[q.id] === q.correctAnswer).length}
+                                    </span>
+                                  </div>
+                                  <div className="p-4 bg-red-500/5 rounded-2xl border border-red-500/10 text-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-red-600 block mb-1">Failed Questions</span>
+                                    <span className="text-2xl font-bold text-red-600">
+                                      {module.quiz.filter(q => selectedAnswers[q.id] !== q.correctAnswer).length}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Results Breakdown */}
+                              <div className="max-w-3xl mx-auto text-left space-y-6 pt-8 border-t border-black/5 dark:border-white/5">
+                                <h4 className="text-xl font-bold flex items-center gap-2">
+                                  <Award size={20} className="text-secondary" /> Detailed Results
+                                </h4>
+                                
+                                {module.quiz && module.quiz.length > 0 && (
+                                  <div className="grid gap-4">
+                                    {module.quiz.map((q, idx) => (
+                                      <div key={q.id} className="p-6 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/5 space-y-3">
+                                        <div className="flex justify-between items-start gap-4">
+                                          <p className="font-bold">{idx + 1}. {q.question}</p>
+                                          <span className={cn(
+                                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                            selectedAnswers[q.id] === q.correctAnswer 
+                                              ? "bg-green-500/10 text-green-600" 
+                                              : "bg-red-500/10 text-red-600"
+                                          )}>
+                                            {selectedAnswers[q.id] === q.correctAnswer ? 'Correct' : 'Incorrect'}
+                                          </span>
+                                        </div>
+                                        <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                                          <div className="space-y-1">
+                                            <span className="text-primary/40 dark:text-white/40 uppercase text-[10px] font-bold tracking-wider">Your Answer</span>
+                                            <p className={cn(
+                                              "font-medium",
+                                              selectedAnswers[q.id] === q.correctAnswer ? "text-green-600" : "text-red-600"
+                                            )}>{q.options[selectedAnswers[q.id]] || "No answer chosen"}</p>
+                                          </div>
+                                          {selectedAnswers[q.id] !== q.correctAnswer && (
+                                            <div className="space-y-1">
+                                              <span className="text-primary/40 dark:text-white/40 uppercase text-[10px] font-bold tracking-wider text-green-600">Correct Answer</span>
+                                              <p className="font-medium text-green-600">{q.options[q.correctAnswer]}</p>
+                                            </div>
+                                          )}
+                                        </div>
+                                        {q.explanation && (
+                                          <p className="text-sm text-primary/60 dark:text-sage italic bg-white/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                                            <HelpCircle size={14} className="inline mr-1" /> {q.explanation}
+                                          </p>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {module.assessment && module.assessment.sections && (
+                                  <div className="space-y-8">
+                                    {module.assessment.sections.map((section: any, sIdx: number) => (
+                                      <div key={sIdx} className="space-y-4">
+                                        <h5 className="font-bold text-secondary text-sm uppercase tracking-widest">{section.title}</h5>
+                                        {section.questions.map((q: any, qIdx: number) => (
+                                          <div key={qIdx} className="p-6 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/5 space-y-4">
+                                            <p className="font-bold text-primary/80">{q.label}: {q.text}</p>
+                                            <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5">
+                                              <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40 dark:text-white/40 block mb-2">My Submission</span>
+                                              <p className="text-primary/80 dark:text-sage leading-relaxed italic">
+                                                {writtenAnswers[`${section.title}-${qIdx}`] || (writtenAnswers['fallback'] ? "Response submitted (refer to guide below)" : "No response provided")}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              {module.answerGuide && (
+                                <div className="max-w-3xl mx-auto text-left p-8 bg-black/[0.03] dark:bg-white/[0.03] border-l-4 border-secondary rounded-xl space-y-4">
+                                  <h4 className="text-xl font-bold text-secondary flex items-center gap-2">
+                                    <HelpCircle size={20} /> Answer Guide (Instructor)
+                                  </h4>
+                                  <div className="prose dark:prose-invert max-w-none text-primary/80 dark:text-sage font-medium leading-relaxed italic">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                      {module.answerGuide}
+                                    </ReactMarkdown>
+                                  </div>
+                                </div>
+                              )}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                          <button
+                            onClick={handleNextModule}
+                            className="px-12 py-4 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark font-bold text-lg hover:bg-accent transition-all"
+                          >
+                            {moduleIndex === course.modules.length - 1 ? 'Finish Course' : 'Next Module'}
+                          </button>
+                          <button
+                            onClick={handleRetryQuiz}
+                            className="px-8 py-4 rounded-full border-2 border-primary/20 dark:border-white/10 text-primary dark:text-sage font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all"
+                          >
+                            Retake Assessment
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-6">
@@ -300,40 +554,114 @@ const Learning = () => {
                           <XCircle size={48} />
                         </div>
                         <h3 className="text-3xl font-bold text-red-600">Assessment Failed</h3>
-                        <p className="text-lg text-primary/70 dark:text-sage">Don't worry, you can review the content and try again.</p>
+                        <p className="text-lg text-primary/70 dark:text-sage">You scored {score}%. You need at least 80% to pass.</p>
+                        <p className="text-sm font-medium text-primary/40 dark:text-white/40">Attempts remaining: {MAX_ATTEMPTS - quizAttempt}</p>
                         
-                        <div className="space-y-6 text-left max-w-2xl mx-auto">
-                          {module.quiz.map((q, idx) => (
-                            <div key={q.id} className="p-6 bg-black/5 dark:bg-white/5 rounded-2xl space-y-3">
-                              <p className="font-bold">{idx + 1}. {q.question}</p>
-                              {quizAttempt === 1 ? (
-                                <p className={cn(
-                                  "text-sm font-bold flex items-center gap-2",
-                                  selectedAnswers[q.id] === q.correctAnswer ? "text-green-600" : "text-red-600"
-                                )}>
-                                  {selectedAnswers[q.id] === q.correctAnswer ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                                  {selectedAnswers[q.id] === q.correctAnswer ? 'Correct' : 'Incorrect - Try again'}
-                                </p>
-                              ) : (
-                                <div className="space-y-2">
-                                  <p className="text-sm font-bold text-green-600 flex items-center gap-2">
-                                    <CheckCircle2 size={16} /> Correct Answer: {q.options[q.correctAnswer]}
-                                  </p>
-                                  <p className="text-sm text-primary/60 dark:text-sage italic bg-white/50 dark:bg-black/20 p-3 rounded-xl">
-                                    <HelpCircle size={14} className="inline mr-1" /> {q.explanation}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                        <div className="pt-4">
+                          <button
+                            onClick={() => setShowBreakdown(!showBreakdown)}
+                            className="flex items-center gap-2 mx-auto px-6 py-2 rounded-full bg-black/5 dark:bg-white/5 text-sm font-bold border border-black/5 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all"
+                          >
+                            {showBreakdown ? (
+                              <>Hide Answer Breakdown <ChevronUp size={16} /></>
+                            ) : (
+                              <>Show Answer Breakdown <ChevronDown size={16} /></>
+                            )}
+                          </button>
                         </div>
 
-                        <button
-                          onClick={handleRetryQuiz}
-                          className="px-12 py-4 rounded-full bg-secondary dark:bg-[#E6B981] text-white dark:text-neutral-dark font-bold text-lg hover:bg-earth transition-all"
-                        >
-                          Retry Assessment
-                        </button>
+                        <AnimatePresence>
+                          {showBreakdown && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden space-y-8"
+                            >
+                              {/* Results Breakdown */}
+                              <div className="max-w-2xl mx-auto text-left space-y-6 pt-8 border-t border-black/5 dark:border-white/5">
+                                {module.quiz && module.quiz.length > 0 && (
+                                  <div className="grid gap-4">
+                                    {module.quiz.map((q, idx) => (
+                                      <div key={q.id} className="p-6 bg-black/5 dark:bg-white/5 rounded-2xl border border-black/5 dark:border-white/5 space-y-3">
+                                        <div className="flex justify-between items-start gap-4">
+                                          <p className="font-bold">{idx + 1}. {q.question}</p>
+                                          <span className={cn(
+                                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                            selectedAnswers[q.id] === q.correctAnswer 
+                                              ? "bg-green-500/10 text-green-600" 
+                                              : "bg-red-500/10 text-red-600"
+                                          )}>
+                                            {selectedAnswers[q.id] === q.correctAnswer ? 'Correct' : 'Incorrect'}
+                                          </span>
+                                        </div>
+                                        
+                                        <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                                          <div className="space-y-1">
+                                            <span className="text-primary/40 dark:text-white/40 uppercase text-[10px] font-bold tracking-wider">Your Answer</span>
+                                            <p className={cn(
+                                              "font-medium",
+                                              selectedAnswers[q.id] === q.correctAnswer ? "text-green-600" : "text-red-600"
+                                            )}>{q.options[selectedAnswers[q.id]]}</p>
+                                          </div>
+                                          
+                                          {quizAttempt >= MAX_ATTEMPTS && selectedAnswers[q.id] !== q.correctAnswer && (
+                                            <div className="space-y-1">
+                                              <span className="text-primary/40 dark:text-white/40 uppercase text-[10px] font-bold tracking-wider text-green-600">Correct Answer</span>
+                                              <p className="font-medium text-green-600">{q.options[q.correctAnswer]}</p>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {quizAttempt >= MAX_ATTEMPTS && q.explanation && (
+                                          <p className="text-sm text-primary/60 dark:text-sage italic bg-white/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                                            <HelpCircle size={14} className="inline mr-1" /> {q.explanation}
+                                          </p>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {quizAttempt >= MAX_ATTEMPTS && module.answerGuide && (
+                                  <div className="p-8 bg-black/[0.03] dark:bg-white/[0.03] border-l-4 border-secondary rounded-xl space-y-4">
+                                    <h4 className="text-xl font-bold text-secondary flex items-center gap-2">
+                                      <HelpCircle size={20} /> Answer Guide (Instructor)
+                                    </h4>
+                                    <div className="prose dark:prose-invert max-w-none text-primary/80 dark:text-sage font-medium leading-relaxed italic">
+                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {module.answerGuide}
+                                      </ReactMarkdown>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                          {quizAttempt < MAX_ATTEMPTS ? (
+                            <button
+                              onClick={handleRetryQuiz}
+                              className="px-12 py-4 rounded-full bg-secondary dark:bg-[#E6B981] text-white dark:text-neutral-dark font-bold text-lg hover:bg-earth transition-all"
+                            >
+                              Retake Assessment
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setCurrentTopicIndex(-1);
+                                setShowQuiz(false);
+                                handleRetryQuiz();
+                                setQuizAttempt(0);
+                              }}
+                              className="px-12 py-4 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark font-bold text-lg hover:bg-accent transition-all"
+                            >
+                              Review & Refresh
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

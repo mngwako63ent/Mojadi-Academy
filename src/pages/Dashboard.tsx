@@ -147,32 +147,35 @@ const Dashboard = () => {
             <h3 className="text-xl font-bold">Learning Stats</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span className="text-primary/60 dark:text-sage">Courses Completed</span>
-                <span className="text-2xl font-bold">0</span>
+                <span className="text-primary/60 dark:text-sage">Courses Enrolled</span>
+                <span className="text-2xl font-bold">{enrolledCourses.length}</span>
               </div>
               <div className="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span className="text-primary/60 dark:text-sage">Certificates Earned</span>
-                <span className="text-2xl font-bold">0</span>
+                <span className="text-primary/60 dark:text-sage">Modules Completed</span>
+                <span className="text-2xl font-bold">
+                  {enrolledCourses.reduce((acc, c) => acc + c.completedModules.length, 0)}
+                </span>
               </div>
               <div className="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span className="text-primary/60 dark:text-sage">Study Hours</span>
-                <span className="text-2xl font-bold">0</span>
+                <span className="text-primary/60 dark:text-sage">Average Progress</span>
+                <span className="text-2xl font-bold">
+                  {enrolledCourses.length > 0 
+                    ? Math.round(enrolledCourses.reduce((acc, c) => acc + c.progress, 0) / enrolledCourses.length) 
+                    : 0}%
+                </span>
               </div>
             </div>
           </section>
 
           <section className="glass p-8 rounded-[2.5rem] space-y-6 bg-secondary/5 border-secondary/20">
-            <h3 className="text-xl font-bold text-secondary">Upcoming Webinars</h3>
-            <p className="text-sm text-primary/60 dark:text-sage">Join our live sessions with agricultural experts.</p>
+            <h3 className="text-xl font-bold text-secondary">Academy News</h3>
+            <p className="text-sm text-primary/60 dark:text-sage">Stay updated with the latest from Mojadi Academy.</p>
             <div className="space-y-4">
               <div className="p-4 bg-white/50 dark:bg-black/20 rounded-2xl border border-secondary/10">
-                <p className="font-bold text-sm">Sustainable Soil Health</p>
-                <p className="text-xs text-secondary">Tomorrow, 14:00 PM</p>
+                <p className="font-bold text-sm">Level 2 Modules Live</p>
+                <p className="text-xs text-secondary">Intermediate Crop Production is now fully available.</p>
               </div>
             </div>
-            <button className="w-full py-3 rounded-xl border border-secondary text-secondary font-bold text-sm hover:bg-secondary hover:text-white transition-all">
-              View Schedule
-            </button>
           </section>
         </div>
       </div>
