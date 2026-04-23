@@ -55,8 +55,8 @@ export const Navbar = () => {
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white group-hover:rotate-12 transition-transform duration-300">
             <Leaf size={24} />
           </div>
-          <span className="text-2xl font-display font-bold tracking-tight text-primary dark:text-sage">
-            Mojadi<span className="text-secondary dark:text-[#E6B981]">Academy</span>
+          <span className="text-2xl font-display font-bold tracking-tight text-primary">
+            Mojadi<span className="text-secondary">Academy</span>
           </span>
         </Link>
 
@@ -67,10 +67,10 @@ export const Navbar = () => {
               key={link.name}
               to={link.path}
               className={cn(
-                'text-sm font-medium transition-colors hover:text-secondary dark:hover:text-[#E6B981]',
+                'text-sm font-medium transition-colors hover:text-secondary',
                 location.pathname === link.path 
-                  ? 'text-secondary dark:text-[#E6B981]' 
-                  : 'text-primary/70 dark:text-sage'
+                  ? 'text-secondary' 
+                  : 'text-primary/70'
               )}
             >
               {link.name}
@@ -149,7 +149,7 @@ export const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={cn(
                   'text-lg font-medium py-2 border-b border-black/5 dark:border-white/5',
-                  location.pathname === link.path ? 'text-secondary dark:text-[#E6B981]' : 'text-primary/70 dark:text-sage'
+                  location.pathname === link.path ? 'text-secondary' : 'text-primary/70'
                 )}
               >
                 {link.name}
@@ -188,8 +188,8 @@ export const Footer = () => {
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary dark:text-sage">
               <Leaf size={24} />
             </div>
-            <span className="text-2xl font-display font-bold tracking-tight dark:text-sage">
-              Mojadi<span className="text-secondary dark:text-[#E6B981]">Academy</span>
+            <span className="text-2xl font-display font-bold tracking-tight">
+              Mojadi<span className="text-secondary">Academy</span>
             </span>
           </Link>
           <p className="text-white/70 leading-relaxed">

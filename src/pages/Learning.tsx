@@ -151,7 +151,7 @@ const Learning = () => {
   };
 
   return (
-    <div className="pt-24 pb-32 min-h-screen bg-neutral-light dark:bg-neutral-dark">
+    <div className="pt-24 pb-32 min-h-screen bg-neutral-bg dark:bg-neutral-dark">
       <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-4 gap-8">
         
         {/* Sidebar Navigation */}
@@ -205,11 +205,11 @@ const Learning = () => {
                   // Module Overview
                   <div className="space-y-8">
                     <div className="space-y-4">
-                      <div className="flex flex-wrap items-center gap-2 text-secondary dark:text-[#E6B981] font-bold text-sm uppercase tracking-widest">
+                      <div className="flex flex-wrap items-center gap-2 text-secondary font-bold text-sm uppercase tracking-widest">
                         <BookOpen size={16} /> Module Overview
                       </div>
                       <h1 className="text-3xl md:text-4xl font-display font-bold text-balance">{module.title}</h1>
-                      <p className="text-xl text-primary/70 dark:text-sage leading-relaxed whitespace-pre-wrap">
+                      <p className="text-xl text-primary/80 leading-relaxed whitespace-pre-wrap">
                         {module.introduction}
                       </p>
                     </div>
@@ -219,8 +219,8 @@ const Learning = () => {
                       <div className="grid md:grid-cols-2 gap-4">
                         {module.learningObjectives.map((obj, i) => (
                           <div key={i} className="flex items-start gap-3 p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                            <CheckCircle2 size={20} className="text-secondary dark:text-[#E6B981] shrink-0 mt-0.5" />
-                            <span className="text-primary/80 dark:text-sage font-medium">{obj}</span>
+                            <CheckCircle2 size={20} className="text-secondary shrink-0 mt-0.5" />
+                            <span className="text-primary/80 font-medium">{obj}</span>
                           </div>
                         ))}
                       </div>
@@ -229,7 +229,7 @@ const Learning = () => {
                     <div className="pt-8 border-t border-black/5 dark:border-white/5 flex justify-end">
                       <button
                         onClick={() => setCurrentTopicIndex(0)}
-                        className="flex items-center gap-2 px-8 py-4 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent transition-all font-bold text-lg"
+                        className="flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground hover:bg-accent transition-all font-bold text-lg"
                       >
                         Start Learning <ChevronRight size={20} />
                       </button>
@@ -239,13 +239,13 @@ const Learning = () => {
                   // Topic Content
                   <>
                     <div className="space-y-4">
-                      <div className="flex flex-wrap items-center gap-2 text-secondary dark:text-[#E6B981] font-bold text-sm uppercase tracking-widest">
+                      <div className="flex flex-wrap items-center gap-2 text-secondary font-bold text-sm uppercase tracking-widest">
                         <BookOpen size={16} /> Topic {currentTopicIndex + 1} of {module.topics.length}
                       </div>
                       <h1 className="text-3xl md:text-4xl font-display font-bold text-balance">{currentTopic.title}</h1>
                     </div>
 
-                    <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed overflow-x-auto">
+                    <div className="prose dark:prose-invert max-w-none text-lg text-primary/90 leading-relaxed overflow-x-auto">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {currentTopic.content}
                       </ReactMarkdown>
@@ -260,7 +260,7 @@ const Learning = () => {
                       </button>
                       <button
                         onClick={handleNextTopic}
-                        className="flex items-center gap-2 px-8 py-3 rounded-full bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent transition-all font-bold"
+                        className="flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground hover:bg-accent transition-all font-bold"
                       >
                         {currentTopicIndex === module.topics.length - 1 ? 'Start Assessment' : 'Next Topic'} <ChevronRight size={20} />
                       </button>
@@ -276,11 +276,11 @@ const Learning = () => {
                 className="glass p-8 md:p-12 rounded-[2.5rem] space-y-12"
               >
                 <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-secondary/10 text-secondary dark:text-[#E6B981] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-secondary/10 text-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <Award size={32} />
                   </div>
                   <h2 className="text-3xl font-display font-bold">Module Assessment</h2>
-                  <p className="text-primary/60 dark:text-sage">Test your knowledge to complete this module.</p>
+                  <p className="text-primary/80">Test your knowledge to complete this module.</p>
                 </div>
 
                 {!quizSubmitted ? (
@@ -302,7 +302,7 @@ const Learning = () => {
                             <div key={sIdx} className="space-y-8">
                               <div className="space-y-4">
                                 {section.description && (
-                                  <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 dark:text-sage leading-relaxed overflow-x-auto">
+                                  <div className="prose dark:prose-invert max-w-none text-lg text-primary/80 leading-relaxed overflow-x-auto">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                       {section.description}
                                     </ReactMarkdown>
@@ -315,14 +315,14 @@ const Learning = () => {
                                   <div key={qIdx} className="space-y-4">
                                     <div className="space-y-2">
                                       <span className="font-bold text-lg text-secondary">{q.label}</span>
-                                      <p className="text-lg font-medium text-primary/90 dark:text-sage whitespace-pre-wrap">{q.text}</p>
+                                      <p className="text-lg font-medium text-primary/90 whitespace-pre-wrap">{q.text}</p>
                                     </div>
                                     <div className="relative group">
                                       <div className="absolute top-4 left-4 text-xs font-italic text-black/30 dark:text-white/30 pointer-events-none italic">
                                         Learner response:
                                       </div>
                                       <textarea 
-                                        className="w-full h-40 p-4 pt-10 rounded-xl bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 focus:border-secondary outline-none transition-all shadow-sm"
+                                        className="w-full h-40 p-4 pt-10 rounded-xl bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 focus:border-secondary outline-none transition-all shadow-sm shadow-black/5"
                                         placeholder="Type your answer here (minimum 10 characters)..."
                                         value={writtenAnswers[`${section.title}-${qIdx}`] || ''}
                                         onChange={(e) => setWrittenAnswers(prev => ({ ...prev, [`${section.title}-${qIdx}`]: e.target.value }))}
@@ -357,7 +357,7 @@ const Learning = () => {
                     {module.quiz && module.quiz.length > 0 && module.quiz.map((q, idx) => (
                       <div key={q.id} className="space-y-6">
                         <h4 className="text-xl font-bold flex gap-3">
-                          <span className="text-secondary dark:text-[#E6B981]">{idx + 1}.</span>
+                          <span className="text-secondary">{idx + 1}.</span>
                           {q.question}
                         </h4>
                         <div className="grid gap-3">
@@ -368,7 +368,7 @@ const Learning = () => {
                               className={cn(
                                 "w-full p-4 rounded-2xl text-left border-2 transition-all font-medium",
                                 selectedAnswers[q.id] === optIdx 
-                                  ? "border-secondary bg-secondary/5 text-secondary dark:text-[#E6B981]" 
+                                  ? "border-secondary bg-secondary/5 text-secondary" 
                                   : "border-black/5 dark:border-white/5 hover:border-primary/20"
                               )}
                             >
@@ -397,16 +397,16 @@ const Learning = () => {
                           <CheckCircle2 size={48} />
                         </div>
                         <h3 className="text-3xl font-bold text-green-600">Congratulations!</h3>
-                        <p className="text-lg text-primary/70 dark:text-sage">You have successfully completed {module.title}.</p>
+                        <p className="text-lg text-primary/80">You have successfully completed {module.title}.</p>
                         
                         <div className="flex justify-center gap-8 text-sm font-bold uppercase tracking-wider">
                           <div className="flex flex-col items-center gap-1">
                             <span className="text-primary/40 dark:text-white/40">Score</span>
-                            <span className="text-2xl text-primary dark:text-sage">{score}%</span>
+                            <span className="text-2xl text-primary">{score}%</span>
                           </div>
                           <div className="flex flex-col items-center gap-1">
                             <span className="text-primary/40 dark:text-white/40">Attempts</span>
-                            <span className="text-2xl text-primary dark:text-sage">{quizAttempt}</span>
+                            <span className="text-2xl text-primary">{quizAttempt}</span>
                           </div>
                         </div>
 
@@ -486,7 +486,7 @@ const Learning = () => {
                                           )}
                                         </div>
                                         {q.explanation && (
-                                          <p className="text-sm text-primary/60 dark:text-sage italic bg-white/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                                          <p className="text-sm text-primary/70 italic bg-white/50 dark:bg-black/20 p-3 rounded-xl border border-black/5 dark:border-white/5">
                                             <HelpCircle size={14} className="inline mr-1" /> {q.explanation}
                                           </p>
                                         )}
@@ -505,7 +505,7 @@ const Learning = () => {
                                             <p className="font-bold text-primary/80">{q.label}: {q.text}</p>
                                             <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl border border-black/5 dark:border-white/5">
                                               <span className="text-[10px] font-bold uppercase tracking-widest text-primary/40 dark:text-white/40 block mb-2">My Submission</span>
-                                              <p className="text-primary/80 dark:text-sage leading-relaxed italic">
+                                              <p className="text-primary/80 leading-relaxed italic">
                                                 {writtenAnswers[`${section.title}-${qIdx}`] || (writtenAnswers['fallback'] ? "Response submitted (refer to guide below)" : "No response provided")}
                                               </p>
                                             </div>
@@ -522,7 +522,7 @@ const Learning = () => {
                                   <h4 className="text-xl font-bold text-secondary flex items-center gap-2">
                                     <HelpCircle size={20} /> Answer Guide (Instructor)
                                   </h4>
-                                  <div className="prose dark:prose-invert max-w-none text-primary/80 dark:text-sage font-medium leading-relaxed italic">
+                                  <div className="prose dark:prose-invert max-w-none text-primary/80 font-medium leading-relaxed italic">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                       {module.answerGuide}
                                     </ReactMarkdown>
@@ -554,7 +554,7 @@ const Learning = () => {
                           <XCircle size={48} />
                         </div>
                         <h3 className="text-3xl font-bold text-red-600">Assessment Failed</h3>
-                        <p className="text-lg text-primary/70 dark:text-sage">You scored {score}%. You need at least 80% to pass.</p>
+                        <p className="text-lg text-primary/80">You scored {score}%. You need at least 80% to pass.</p>
                         <p className="text-sm font-medium text-primary/40 dark:text-white/40">Attempts remaining: {MAX_ATTEMPTS - quizAttempt}</p>
                         
                         <div className="pt-4">
@@ -628,7 +628,7 @@ const Learning = () => {
                                     <h4 className="text-xl font-bold text-secondary flex items-center gap-2">
                                       <HelpCircle size={20} /> Answer Guide (Instructor)
                                     </h4>
-                                    <div className="prose dark:prose-invert max-w-none text-primary/80 dark:text-sage font-medium leading-relaxed italic">
+                                    <div className="prose dark:prose-invert max-w-none text-primary/80 font-medium leading-relaxed italic">
                                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                         {module.answerGuide}
                                       </ReactMarkdown>
