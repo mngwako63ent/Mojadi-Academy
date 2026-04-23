@@ -17,7 +17,7 @@ const About = () => {
           <h1 className="text-5xl md:text-6xl font-display font-bold leading-tight">
             Cultivating Knowledge for a <span className="text-secondary">Sustainable</span> Future
           </h1>
-          <p className="text-lg text-foreground/80 leading-relaxed">
+          <p className="text-lg text-primary/70 dark:text-sage leading-relaxed">
             Founded in 2015, Mojadi Academy began with a simple mission: to bridge the gap between traditional farming wisdom and modern agricultural science. We believe that every farmer, regardless of scale, deserves access to world-class education.
           </p>
           <div className="grid grid-cols-2 gap-8">
@@ -26,14 +26,14 @@ const About = () => {
                 <Target size={24} />
               </div>
               <h4 className="font-bold">Our Mission</h4>
-              <p className="text-sm text-foreground/60">To empower farmers with the tools and knowledge to thrive in a changing climate.</p>
+              <p className="text-sm text-primary/60 dark:text-sage">To empower farmers with the tools and knowledge to thrive in a changing climate.</p>
             </div>
             <div className="space-y-2">
-              <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary/10 text-primary dark:text-sage rounded-xl flex items-center justify-center">
                 <History size={24} />
               </div>
               <h4 className="font-bold">Our Vision</h4>
-              <p className="text-sm text-foreground/60">A world where sustainable agriculture is the standard, not the exception.</p>
+              <p className="text-sm text-primary/60 dark:text-sage">A world where sustainable agriculture is the standard, not the exception.</p>
             </div>
           </div>
         </motion.div>

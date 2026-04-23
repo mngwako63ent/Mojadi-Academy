@@ -63,7 +63,7 @@ const Dashboard = () => {
     <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto space-y-12">
       <header className="space-y-4">
         <h1 className="text-4xl font-display font-bold">Welcome back, {user?.displayName || 'Farmer'}!</h1>
-        <p className="text-primary/80 text-lg">Continue your journey to agricultural excellence.</p>
+        <p className="text-primary/60 dark:text-sage text-lg">Continue your journey to agricultural excellence.</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -93,11 +93,11 @@ const Dashboard = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-xl font-bold">{course.title}</h3>
-                          <p className="text-sm text-primary/80">{course.category}</p>
+                          <p className="text-sm text-primary/60 dark:text-sage">{course.category}</p>
                         </div>
                         <div className="text-right">
                           <span className="text-2xl font-bold text-secondary">{course.progress}%</span>
-                          <p className="text-xs text-primary/60 uppercase font-bold tracking-wider">Progress</p>
+                          <p className="text-xs text-primary/40 dark:text-sage uppercase font-bold tracking-wider">Progress</p>
                         </div>
                       </div>
                       
@@ -110,7 +110,7 @@ const Dashboard = () => {
                       </div>
                       
                       <div className="flex justify-between items-center pt-2">
-                        <div className="flex gap-4 text-sm text-primary/80">
+                        <div className="flex gap-4 text-sm text-primary/60 dark:text-sage">
                           <span className="flex items-center gap-1"><Clock size={14} /> {course.duration}</span>
                           <span className="flex items-center gap-1"><Award size={14} /> {course.completedModules.length} / {course.modules.length} Modules</span>
                         </div>
@@ -132,7 +132,7 @@ const Dashboard = () => {
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold">No courses enrolled yet</h3>
-                  <p className="text-primary/80">Start your learning journey by exploring our available courses.</p>
+                  <p className="text-primary/60 dark:text-sage">Start your learning journey by exploring our available courses.</p>
                 </div>
                 <Link to="/courses" className="btn-premium bg-primary text-white inline-block">
                   Browse Courses
@@ -147,17 +147,17 @@ const Dashboard = () => {
             <h3 className="text-xl font-bold">Learning Stats</h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span className="text-primary/80">Courses Enrolled</span>
+                <span className="text-primary/60 dark:text-sage">Courses Enrolled</span>
                 <span className="text-2xl font-bold">{enrolledCourses.length}</span>
               </div>
               <div className="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span className="text-primary/80">Modules Completed</span>
+                <span className="text-primary/60 dark:text-sage">Modules Completed</span>
                 <span className="text-2xl font-bold">
                   {enrolledCourses.reduce((acc, c) => acc + c.completedModules.length, 0)}
                 </span>
               </div>
               <div className="flex justify-between items-center p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <span className="text-primary/80">Average Progress</span>
+                <span className="text-primary/60 dark:text-sage">Average Progress</span>
                 <span className="text-2xl font-bold">
                   {enrolledCourses.length > 0 
                     ? Math.round(enrolledCourses.reduce((acc, c) => acc + c.progress, 0) / enrolledCourses.length) 
@@ -169,7 +169,7 @@ const Dashboard = () => {
 
           <section className="glass p-8 rounded-[2.5rem] space-y-6 bg-secondary/5 border-secondary/20">
             <h3 className="text-xl font-bold text-secondary">Academy News</h3>
-            <p className="text-sm text-foreground/60">Stay updated with the latest from Mojadi Academy.</p>
+            <p className="text-sm text-primary/60 dark:text-sage">Stay updated with the latest from Mojadi Academy.</p>
             <div className="space-y-4">
               <div className="p-4 bg-white/50 dark:bg-black/20 rounded-2xl border border-secondary/10">
                 <p className="font-bold text-sm">Level 2 Modules Live</p>

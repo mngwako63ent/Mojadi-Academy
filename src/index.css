@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -21,12 +22,12 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
+  /* Brand Colors */
   --color-earth: #A47551;
   --color-sage: #B2AC88;
   --color-sage-bright: #C5C0A3;
   --color-sage-dark: #9F9975;
   --color-neutral-dark: #111827;
-  --color-neutral-light: #F9FAFB;
   --color-neutral-bg: #F9FAFB;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -52,7 +53,6 @@
 
 @layer base {
   :root {
-    color-scheme: light;
     --background: #F9FAFB;
     --foreground: #0C3E2F;
     --card: #FFFFFF;
@@ -72,49 +72,48 @@
     --border: #E5E7EB;
     --input: #E5E7EB;
     --ring: #0C3E2F;
-    --radius: 1.25rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    color-scheme: dark;
-    --background: #0F172A;
-    --foreground: #F8FAFC;
-    --card: #1E293B;
-    --card-foreground: #F8FAFC;
-    --popover: #1E293B;
-    --popover-foreground: #F8FAFC;
+    --background: #111827;
+    --foreground: #B2AC88;
+    --card: #1F2937;
+    --card-foreground: #B2AC88;
+    --popover: #1F2937;
+    --popover-foreground: #B2AC88;
     --primary: #B2AC88;
-    --primary-foreground: #0F172A;
+    --primary-foreground: #111827;
     --secondary: #E6B981;
-    --secondary-foreground: #0F172A;
-    --muted: #334155;
-    --muted-foreground: #94A3B8;
+    --secondary-foreground: #111827;
+    --muted: #374151;
+    --muted-foreground: #9CA3AF;
     --accent: #14532D;
     --accent-foreground: #B2AC88;
     --destructive: #7F1D1D;
     --destructive-foreground: #B2AC88;
-    --border: #334155;
-    --input: #334155;
+    --border: #374151;
+    --input: #374151;
     --ring: #B2AC88;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
-  html, body {
+  body {
     @apply bg-background text-foreground font-sans antialiased transition-colors duration-300;
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-white dark:bg-[#111827] backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm;
+    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
   }
   
   .dark .glass {
-    @apply bg-[#111827]/90 backdrop-blur-md border-white/10 shadow-lg;
+    @apply bg-[#1F2937]/80 backdrop-blur-md border-white/10 shadow-lg;
   }
 
   .btn-premium {
@@ -123,19 +122,19 @@
 
   /* Table Styles */
   .prose table {
-    @apply w-full border-collapse my-8 text-sm md:text-base bg-white/50 dark:bg-black/20 rounded-xl overflow-hidden;
+    @apply w-full border-collapse my-8 text-sm md:text-base;
   }
 
   .prose thead {
-    @apply bg-primary/10 dark:bg-primary/20;
+    @apply bg-primary/5 dark:bg-white/5;
   }
 
   .prose th {
-    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-left font-bold text-primary dark:text-primary-foreground;
+    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-left font-bold text-primary dark:text-sage;
   }
 
   .prose td {
-    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-foreground/90 dark:text-foreground;
+    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-primary/80 dark:text-sage/80;
   }
 
   .prose tr:nth-child(even) {
@@ -174,5 +173,3 @@
     @apply overflow-x-auto w-full my-8 rounded-2xl border border-black/5 dark:border-white/5;
   }
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');

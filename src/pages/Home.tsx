@@ -67,9 +67,9 @@ const Home = () => {
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
                     <CheckCircle2 size={24} />
                   </div>
-                  <span className="font-bold text-primary">Certified</span>
+                  <span className="font-bold text-primary dark:text-sage">Certified</span>
                 </div>
-                <p className="text-xs text-primary/60">Professional agricultural certification upon completion.</p>
+                <p className="text-xs text-primary/60 dark:text-sage">Professional agricultural certification upon completion.</p>
               </div>
             </div>
           </motion.div>
@@ -83,7 +83,7 @@ const Home = () => {
             <span className="text-secondary font-bold uppercase tracking-widest text-sm">Our Curriculum</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold">Featured Courses</h2>
           </div>
-          <Link to="/courses" className="text-primary font-bold flex items-center gap-2 hover:text-secondary transition-colors">
+          <Link to="/courses" className="text-primary dark:text-sage font-bold flex items-center gap-2 hover:text-secondary transition-colors">
             View All Courses <ArrowRight size={20} />
           </Link>
         </div>

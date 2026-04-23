@@ -55,7 +55,7 @@ export const Navbar = () => {
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white group-hover:rotate-12 transition-transform duration-300">
             <Leaf size={24} />
           </div>
-          <span className="text-2xl font-display font-bold tracking-tight text-primary">
+          <span className="text-2xl font-display font-bold tracking-tight text-primary dark:text-sage">
             Mojadi<span className="text-secondary">Academy</span>
           </span>
         </Link>
@@ -70,7 +70,7 @@ export const Navbar = () => {
                 'text-sm font-medium transition-colors hover:text-secondary',
                 location.pathname === link.path 
                   ? 'text-secondary' 
-                  : 'text-primary/70'
+                  : 'text-primary/70 dark:text-sage'
               )}
             >
               {link.name}
@@ -149,7 +149,7 @@ export const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={cn(
                   'text-lg font-medium py-2 border-b border-black/5 dark:border-white/5',
-                  location.pathname === link.path ? 'text-secondary' : 'text-primary/70'
+                  location.pathname === link.path ? 'text-secondary' : 'text-primary/70 dark:text-sage'
                 )}
               >
                 {link.name}
@@ -188,7 +188,7 @@ export const Footer = () => {
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary dark:text-sage">
               <Leaf size={24} />
             </div>
-            <span className="text-2xl font-display font-bold tracking-tight">
+            <span className="text-2xl font-display font-bold tracking-tight dark:text-sage">
               Mojadi<span className="text-secondary">Academy</span>
             </span>
           </Link>

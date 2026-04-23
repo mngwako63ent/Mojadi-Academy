@@ -30,7 +30,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer }) => {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-foreground/60 leading-relaxed">
+            <p className="pb-6 text-primary/60 dark:text-sage leading-relaxed">
               {answer}
             </p>
           </motion.div>
@@ -67,7 +67,7 @@ const Contact = () => {
     <div className="pt-32 pb-32 max-w-7xl mx-auto px-6">
       <div className="text-center space-y-4 mb-20">
         <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tight">Contact Us</h1>
-        <p className="text-foreground/60 max-w-2xl mx-auto">
+        <p className="text-primary/60 dark:text-sage max-w-2xl mx-auto">
           Have questions about our courses? Want to learn more about agricultural education? We're here to help!
         </p>
       </div>
@@ -89,7 +89,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold">{item.title}</h4>
-                  <p className="text-foreground/60">{item.content}</p>
+                  <p className="text-primary/60 dark:text-sage">{item.content}</p>
                 </div>
               </div>
             ))}
@@ -107,54 +107,54 @@ const Contact = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-foreground/40">Full Name *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Full Name *</label>
               <input
                 required
                 type="text"
                 value={formState.name}
                 onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all text-foreground"
+                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all"
                 placeholder="Your Name"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-foreground/40">Email Address *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Email Address *</label>
               <input
                 required
                 type="email"
                 value={formState.email}
                 onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all text-foreground"
+                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all"
                 placeholder="your@email.com"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-foreground/40">Phone Number</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Phone Number</label>
               <input
                 type="tel"
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all text-foreground"
+                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all"
                 placeholder="Your phone number"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-foreground/40">Subject *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Subject *</label>
               <input
                 required
                 type="text"
                 value={formState.subject}
                 onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all text-foreground"
+                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all"
                 placeholder="What's this about?"
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-foreground/40">Message *</label>
+              <label className="text-xs font-bold uppercase tracking-widest text-primary/40 dark:text-sage">Message *</label>
               <textarea
                 required
                 rows={5}
                 value={formState.message}
                 onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all resize-none text-foreground"
+                className="w-full bg-black/5 dark:bg-white/5 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-secondary transition-all resize-none"
                 placeholder="Tell us more about your inquiry..."
               />
             </div>
@@ -175,7 +175,7 @@ const Contact = () => {
       {/* FAQ */}
       <div className="text-center space-y-8">
         <h2 className="text-3xl font-display font-bold">Frequently Asked Questions</h2>
-        <p className="text-foreground/60">Find quick answers to common questions</p>
+        <p className="text-primary/60 dark:text-sage">Find quick answers to common questions</p>
         <div className="glass rounded-[2.5rem] p-8 max-w-3xl mx-auto">
           {faqs.map((faq) => (
             <FAQItem key={faq.question} {...faq} />

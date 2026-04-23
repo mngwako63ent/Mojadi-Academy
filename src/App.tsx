@@ -37,11 +37,11 @@ export default function App() {
 
   if (!isAuthReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-neutral-dark">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="text-primary dark:text-sage"
+          className="text-primary"
         >
           <Leaf size={48} />
         </motion.div>

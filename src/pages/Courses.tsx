@@ -28,7 +28,7 @@ const Courses = () => {
     <div className="pt-32 pb-32 space-y-12 max-w-7xl mx-auto px-6">
       <div className="space-y-4">
         <h1 className="text-5xl font-display font-bold tracking-tight">Explore Our Courses</h1>
-        <p className="text-foreground/80 max-w-2xl">
+        <p className="text-primary/60 dark:text-sage max-w-2xl">
           From foundational knowledge to advanced commercial techniques, find the perfect course to elevate your farming expertise.
         </p>
       </div>
@@ -36,7 +36,7 @@ const Courses = () => {
       {/* Filters Bar */}
       <div className="glass p-4 rounded-3xl flex flex-col md:row items-center gap-6">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 dark:text-sage" size={20} />
           <input
             type="text"
             placeholder="Search courses or instructors..."
@@ -50,13 +50,13 @@ const Courses = () => {
           <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-2xl">
             <button
               onClick={() => setView('grid')}
-              className={cn("p-2 rounded-xl transition-all", view === 'grid' ? "bg-white dark:bg-neutral-dark shadow-sm text-secondary" : "text-primary/40")}
+              className={cn("p-2 rounded-xl transition-all", view === 'grid' ? "bg-white dark:bg-neutral-dark shadow-sm text-secondary" : "text-primary/40 dark:text-sage/40")}
             >
               <LayoutGrid size={20} />
             </button>
             <button
               onClick={() => setView('list')}
-              className={cn("p-2 rounded-xl transition-all", view === 'list' ? "bg-white dark:bg-neutral-dark shadow-sm text-secondary" : "text-primary/40")}
+              className={cn("p-2 rounded-xl transition-all", view === 'list' ? "bg-white dark:bg-neutral-dark shadow-sm text-secondary" : "text-primary/40 dark:text-sage/40")}
             >
               <List size={20} />
             </button>
@@ -103,11 +103,11 @@ const Courses = () => {
 
       {filteredCourses.length === 0 && (
         <div className="text-center py-20 space-y-4">
-          <div className="w-20 h-20 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto text-primary/20">
+          <div className="w-20 h-20 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto text-primary/20 dark:text-sage">
             <Search size={40} />
           </div>
           <h3 className="text-2xl font-display font-bold">No courses found</h3>
-          <p className="text-primary/80">Try adjusting your search or filters to find what you're looking for.</p>
+          <p className="text-primary/60 dark:text-sage">Try adjusting your search or filters to find what you're looking for.</p>
           <button 
             onClick={() => { setSearch(''); setCategory('All'); setLevel('All'); }}
             className="text-secondary font-bold hover:underline"

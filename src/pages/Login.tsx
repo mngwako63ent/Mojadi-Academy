@@ -147,7 +147,7 @@ const Login = () => {
           <h1 className="text-3xl font-display font-bold">
             {isSignUp ? 'Create an Account' : 'Welcome Back'}
           </h1>
-          <p className="text-foreground/60">
+          <p className="text-primary/60 dark:text-sage">
             {isSignUp ? 'Join our community of farmers' : 'Sign in to your account'}
           </p>
         </div>
@@ -163,11 +163,11 @@ const Login = () => {
             <>
               <div className="flex justify-center mb-6">
                 <label className="relative cursor-pointer group">
-                  <div className="w-24 h-24 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-dashed border-primary/20 group-hover:border-secondary transition-all overflow-hidden">
+                  <div className="w-24 h-24 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-dashed border-primary/20 dark:border-sage/20 group-hover:border-secondary transition-all overflow-hidden">
                     {photo ? (
                       <img src={URL.createObjectURL(photo)} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <Camera className="text-foreground/40" size={32} />
+                      <Camera className="text-primary/40 dark:text-sage" size={32} />
                     )}
                   </div>
                   <input
@@ -182,7 +182,7 @@ const Login = () => {
                 </label>
               </div>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={20} />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 dark:text-sage" size={20} />
                 <input
                   type="text"
                   placeholder="Full Name"
@@ -195,7 +195,7 @@ const Login = () => {
             </>
           )}
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={20} />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 dark:text-sage" size={20} />
             <input
               type="email"
               placeholder="Email Address"
@@ -206,7 +206,7 @@ const Login = () => {
             />
           </div>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/40" size={20} />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 dark:text-sage" size={20} />
             <input
               type="password"
               placeholder="Password"
@@ -251,7 +251,7 @@ const Login = () => {
             <div className="w-full border-t border-black/5 dark:border-white/5"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-neutral-bg dark:bg-neutral-dark px-2 text-foreground/40">Or continue with</span>
+            <span className="bg-neutral-bg dark:bg-neutral-dark px-2 text-primary/40 dark:text-sage">Or continue with</span>
           </div>
         </div>
 
@@ -264,7 +264,7 @@ const Login = () => {
           <span className="font-medium">Google</span>
         </button>
 
-        <p className="text-center text-sm text-foreground/60">
+        <p className="text-center text-sm text-primary/60 dark:text-sage">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <button
             onClick={() => setIsSignUp(!isSignUp)}
