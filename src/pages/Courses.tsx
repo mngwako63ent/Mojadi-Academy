@@ -28,7 +28,7 @@ const Courses = () => {
     <div className="pt-32 pb-32 space-y-12 max-w-7xl mx-auto px-6">
       <div className="space-y-4">
         <h1 className="text-5xl font-display font-bold tracking-tight">Explore Our Courses</h1>
-        <p className="text-primary/80 max-w-2xl">
+        <p className="text-foreground/80 max-w-2xl">
           From foundational knowledge to advanced commercial techniques, find the perfect course to elevate your farming expertise.
         </p>
       </div>

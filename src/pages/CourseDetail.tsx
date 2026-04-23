@@ -62,7 +62,7 @@ const CourseDetail = () => {
 
   return (
     <div className="pt-32 pb-32 max-w-5xl mx-auto px-6">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary dark:hover:text-[#E6B981] transition-colors mb-8">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary/80 hover:text-secondary transition-colors mb-8">
         <ArrowLeft size={20} /> Back to Courses
       </button>
 
@@ -70,20 +70,20 @@ const CourseDetail = () => {
         {/* Header */}
         <div className="space-y-4">
           <div className="flex gap-2">
-            <span className="px-3 py-1 bg-secondary/10 text-secondary dark:text-[#E6B981] text-xs font-bold uppercase tracking-wider rounded-full">
+            <span className="px-3 py-1 bg-secondary/10 text-secondary text-xs font-bold uppercase tracking-wider rounded-full">
               {course.category}
             </span>
-            <span className="px-3 py-1 bg-primary/10 text-primary dark:text-sage text-xs font-bold uppercase tracking-wider rounded-full">
+            <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider rounded-full">
               {course.level}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold">{course.title}</h1>
-          <p className="text-lg text-primary/70 dark:text-sage max-w-2xl">{course.description}</p>
+          <p className="text-lg text-foreground/80 max-w-2xl">{course.description}</p>
           
-            <div className="flex items-center gap-6 text-sm text-primary/60 dark:text-sage pt-2">
+            <div className="flex items-center gap-6 text-sm text-foreground/60 pt-2">
             <div className="flex items-center gap-2"><Star size={20} className="text-yellow-500" /> {course.rating} Rating</div>
-            <div className="flex items-center gap-2"><Users size={20} className="text-secondary dark:text-[#E6B981]" /> {course.students} Students</div>
-            <div className="flex items-center gap-2"><Clock size={20} className="text-secondary dark:text-[#E6B981]" /> {course.duration}</div>
+            <div className="flex items-center gap-2"><Users size={20} className="text-secondary" /> {course.students} Students</div>
+            <div className="flex items-center gap-2"><Clock size={20} className="text-secondary" /> {course.duration}</div>
           </div>
         </div>
 
@@ -103,8 +103,8 @@ const CourseDetail = () => {
                   "How to maximize yield and profitability",
                   "Sustainable and environmentally friendly farming methods"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-primary/80 dark:text-sage">
-                    <CheckCircle2 size={20} className="text-secondary dark:text-[#E6B981] shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-3 text-foreground/80">
+                    <CheckCircle2 size={20} className="text-secondary shrink-0 mt-0.5" />
                     {item}
                   </li>
                 ))}
@@ -123,8 +123,8 @@ const CourseDetail = () => {
             >
               {isEnrolled ? 'Continue Learning' : 'Enroll Now'}
             </button>
-            <div className="space-y-4 text-sm text-primary/70 dark:text-sage">
-              <p className="font-bold text-primary dark:text-sage">This course includes:</p>
+            <div className="space-y-4 text-sm text-foreground/70">
+              <p className="font-bold text-foreground">This course includes:</p>
               <div className="flex items-center gap-3"><BookOpen size={18} /> {course.modules.length} Modules</div>
               <div className="flex items-center gap-3"><Video size={18} /> Video Lessons</div>
               <div className="flex items-center gap-3"><Clock size={18} /> {course.duration} Duration</div>
@@ -146,13 +146,13 @@ const CourseDetail = () => {
                   </div>
                   <div>
                     <h4 className="font-bold">{module.title}</h4>
-                    <p className="text-sm text-primary/60 dark:text-sage">{module.duration}</p>
+                    <p className="text-sm text-foreground/60">{module.duration}</p>
                   </div>
                 </div>
                 {isEnrolled && (
                   <button 
                     onClick={() => navigate(`/learning/${course.id}/${module.id}`)}
-                    className="text-secondary dark:text-[#E6B981] font-bold hover:underline"
+                    className="text-secondary font-bold hover:underline"
                   >
                     Start
                   </button>

@@ -209,7 +209,7 @@ const Learning = () => {
                         <BookOpen size={16} /> Module Overview
                       </div>
                       <h1 className="text-3xl md:text-4xl font-display font-bold text-balance">{module.title}</h1>
-                      <p className="text-xl text-primary/80 leading-relaxed whitespace-pre-wrap">
+                      <p className="text-xl text-foreground font-medium leading-relaxed whitespace-pre-wrap">
                         {module.introduction}
                       </p>
                     </div>
@@ -220,7 +220,7 @@ const Learning = () => {
                         {module.learningObjectives.map((obj, i) => (
                           <div key={i} className="flex items-start gap-3 p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
                             <CheckCircle2 size={20} className="text-secondary shrink-0 mt-0.5" />
-                            <span className="text-primary/80 font-medium">{obj}</span>
+                            <span className="text-foreground font-medium">{obj}</span>
                           </div>
                         ))}
                       </div>
@@ -245,7 +245,7 @@ const Learning = () => {
                       <h1 className="text-3xl md:text-4xl font-display font-bold text-balance">{currentTopic.title}</h1>
                     </div>
 
-                    <div className="prose dark:prose-invert max-w-none text-lg text-primary/90 leading-relaxed overflow-x-auto">
+                    <div className="prose dark:prose-invert max-w-none text-lg text-foreground leading-relaxed overflow-x-auto">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {currentTopic.content}
                       </ReactMarkdown>

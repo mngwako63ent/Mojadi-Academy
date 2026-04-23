@@ -169,7 +169,7 @@ const Dashboard = () => {
 
           <section className="glass p-8 rounded-[2.5rem] space-y-6 bg-secondary/5 border-secondary/20">
             <h3 className="text-xl font-bold text-secondary">Academy News</h3>
-            <p className="text-sm text-primary/60 dark:text-sage">Stay updated with the latest from Mojadi Academy.</p>
+            <p className="text-sm text-foreground/60">Stay updated with the latest from Mojadi Academy.</p>
             <div className="space-y-4">
               <div className="p-4 bg-white/50 dark:bg-black/20 rounded-2xl border border-secondary/10">
                 <p className="font-bold text-sm">Level 2 Modules Live</p>

@@ -110,11 +110,11 @@
 
 @layer components {
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+    @apply bg-white dark:bg-[#111827] backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm;
   }
   
   .dark .glass {
-    @apply bg-[#1F2937]/80 backdrop-blur-md border-white/10 shadow-lg;
+    @apply bg-[#111827]/90 backdrop-blur-md border-white/10 shadow-lg;
   }
 
   .btn-premium {
@@ -123,19 +123,19 @@
 
   /* Table Styles */
   .prose table {
-    @apply w-full border-collapse my-8 text-sm md:text-base;
+    @apply w-full border-collapse my-8 text-sm md:text-base bg-white/50 dark:bg-black/20 rounded-xl overflow-hidden;
   }
 
   .prose thead {
-    @apply bg-primary/5 dark:bg-white/5;
+    @apply bg-primary/10 dark:bg-primary/20;
   }
 
   .prose th {
-    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-left font-bold text-primary dark:text-sage;
+    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-left font-bold text-primary dark:text-primary-foreground;
   }
 
   .prose td {
-    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-primary/80 dark:text-sage/80;
+    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-foreground/90 dark:text-foreground;
   }
 
   .prose tr:nth-child(even) {
