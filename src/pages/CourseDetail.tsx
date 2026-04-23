@@ -1,11 +1,12 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, Star, Clock, BarChart, CheckCircle2, Users, BookOpen, Video, Award, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Star, Clock, BarChart, CheckCircle2, Users, BookOpen, Video, Award, MessageSquare, Lock } from 'lucide-react';
 import { courses } from '../data/courses';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { cn } from '../lib/utils';
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ const CourseDetail = () => {
   const { user } = useAuth();
   const course = courses.find((c) => c.id === id);
   const [isEnrolled, setIsEnrolled] = React.useState(false);
+  const [completedModules, setCompletedModules] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -20,7 +22,13 @@ const CourseDetail = () => {
       if (user && id) {
         const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', id);
         const enrollmentSnap = await getDoc(enrollmentRef);
-        setIsEnrolled(enrollmentSnap.exists());
+        if (enrollmentSnap.exists()) {
+          setIsEnrolled(true);
+          setCompletedModules(enrollmentSnap.data().completedModules || []);
+        } else {
+          setIsEnrolled(false);
+          setCompletedModules([]);
+        }
       }
       setLoading(false);
     };
@@ -138,27 +146,54 @@ const CourseDetail = () => {
         <div className="glass p-8 rounded-[2rem]">
           <h3 className="text-2xl font-bold mb-6">Course Curriculum</h3>
           <div className="space-y-4">
-            {course.modules.map((module, index) => (
-              <div key={module.id} className="flex items-center justify-between p-4 bg-black/5 dark:bg-white/5 rounded-2xl">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 text-primary dark:text-sage rounded-full flex items-center justify-center font-bold">
-                    {index + 6}
+            {course.modules.map((module, index) => {
+              const isCompleted = completedModules.includes(module.id);
+              const isFirstModule = index === 0;
+              const isPrevCompleted = index > 0 && completedModules.includes(course.modules[index - 1].id);
+              const isLocked = !isFirstModule && !isPrevCompleted && !isCompleted;
+              const isCurrent = (isFirstModule || isPrevCompleted) && !isCompleted;
+
+              return (
+                <div 
+                  key={module.id} 
+                  className={cn(
+                    "flex items-center justify-between p-4 rounded-2xl transition-all",
+                    isLocked ? "bg-black/5 dark:bg-white/5 opacity-60" : "bg-black/5 dark:bg-white/10"
+                  )}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center font-bold",
+                      isCompleted ? "bg-green-500/20 text-green-500" : "bg-primary/10 text-primary dark:text-sage"
+                    )}>
+                      {isCompleted ? <CheckCircle2 size={20} /> : index + 6}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold">{module.title}</h4>
+                        {isLocked && <Lock size={14} className="text-primary/40" />}
+                        {isCurrent && <span className="text-[10px] font-black uppercase tracking-widest text-secondary px-2 py-0.5 bg-secondary/10 rounded-full">In Progress</span>}
+                      </div>
+                      <p className="text-sm text-primary/60 dark:text-sage">{module.duration}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold">{module.title}</h4>
-                    <p className="text-sm text-primary/60 dark:text-sage">{module.duration}</p>
-                  </div>
+                  {isEnrolled && (
+                    <div className="flex items-center gap-4">
+                      {isLocked ? (
+                        <span className="text-xs font-bold text-primary/40 italic">Locked</span>
+                      ) : (
+                        <button 
+                          onClick={() => navigate(`/learning/${course.id}/${module.id}`)}
+                          className="text-secondary font-bold hover:underline"
+                        >
+                          {isCompleted ? 'Review' : 'Start'}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
-                {isEnrolled && (
-                  <button 
-                    onClick={() => navigate(`/learning/${course.id}/${module.id}`)}
-                    className="text-secondary font-bold hover:underline"
-                  >
-                    Start
-                  </button>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

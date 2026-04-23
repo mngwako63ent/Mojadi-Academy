@@ -5,7 +5,7 @@ import { courses } from '../data/courses';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, HelpCircle, Award, BookOpen, ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, HelpCircle, Award, BookOpen, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Lock } from 'lucide-react';
 import { cn } from '../lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -28,6 +28,7 @@ const Learning = () => {
   const [quizPassed, setQuizPassed] = useState(false);
   const [score, setScore] = useState(0);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const MAX_ATTEMPTS = 3;
 
   useEffect(() => {
     // Reset assessment state when changing modules
@@ -43,8 +44,17 @@ const Learning = () => {
   }, [moduleId]);
   const [loading, setLoading] = useState(true);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
+  const [isLocked, setIsLocked] = useState(false);
 
-  const MAX_ATTEMPTS = 3;
+  const isModuleLocked = (mid: string) => {
+    if (!course) return false;
+    const idx = course.modules.findIndex(m => m.id === mid);
+    if (idx <= 0) return false;
+    // Check if it was already completed (maybe they are revieweing)
+    if (completedModules.includes(mid)) return false;
+    // Otherwise check previous module
+    return !completedModules.includes(course.modules[idx - 1].id);
+  };
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -58,7 +68,16 @@ const Learning = () => {
           const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', courseId);
           const enrollmentSnap = await getDoc(enrollmentRef);
           if (enrollmentSnap.exists()) {
-            setCompletedModules(enrollmentSnap.data().completedModules || []);
+            const completed = enrollmentSnap.data().completedModules || [];
+            setCompletedModules(completed);
+            
+            // Re-check lock with fresh data
+            const idx = course.modules.findIndex(m => m.id === moduleId);
+            if (idx > 0 && !completed.includes(course.modules[idx-1].id)) {
+              setIsLocked(true);
+            } else {
+              setIsLocked(false);
+            }
           } else {
             // Not enrolled, redirect to course detail
             navigate(`/courses/${courseId}`);
@@ -68,7 +87,7 @@ const Learning = () => {
       setLoading(false);
     };
     fetchProgress();
-  }, [user, isAuthReady, courseId, moduleId, navigate]);
+  }, [user, isAuthReady, courseId, moduleId, navigate, course]);
 
   if (!course || !module) {
     return <div className="pt-32 text-center">Module not found</div>;
@@ -165,35 +184,73 @@ const Learning = () => {
           
           <div className="glass p-6 rounded-3xl space-y-4">
             <h3 className="font-bold text-lg border-b border-black/5 dark:border-white/5 pb-4">Course Progress</h3>
-                  <div className="space-y-2">
-                    {course.modules.map((m, idx) => (
-                      <button
-                        key={m.id}
-                        onClick={() => {
-                          navigate(`/learning/${courseId}/${m.id}`);
-                        }}
-                        className={cn(
-                          "w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all",
-                          m.id === moduleId ? "bg-primary text-white" : "hover:bg-black/5 dark:hover:bg-white/5"
-                        )}
-                      >
-                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-black/10 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold mt-0.5">
-                          {idx + 6}
-                        </div>
-                        <span className="text-sm font-medium leading-snug flex-grow">{m.title.replace('Module ' + (idx + 6) + ': ', '')}</span>
-                        {completedModules.includes(m.id) && (
-                          <CheckCircle2 size={16} className="text-green-500" />
-                        )}
-                      </button>
-                    ))}
+                   <div className="space-y-2">
+                    {course.modules.map((m, idx) => {
+                      const locked = isModuleLocked(m.id);
+                      const active = m.id === moduleId;
+                      const completed = completedModules.includes(m.id);
+
+                      return (
+                        <button
+                          key={m.id}
+                          disabled={locked}
+                          onClick={() => {
+                            if (!locked) navigate(`/learning/${courseId}/${m.id}`);
+                          }}
+                          className={cn(
+                            "w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all",
+                            active ? "bg-primary text-white" : locked ? "opacity-50 cursor-not-allowed" : "hover:bg-black/5 dark:hover:bg-white/5"
+                          )}
+                        >
+                          <div className={cn(
+                            "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5",
+                            active ? "bg-white/20" : "bg-black/10 dark:bg-white/10"
+                          )}>
+                            {locked ? <Lock size={12} /> : idx + 6}
+                          </div>
+                          <span className="text-sm font-medium leading-snug flex-grow">{m.title.replace('Module ' + (idx + 6) + ': ', '')}</span>
+                          {completed && (
+                            <CheckCircle2 size={16} className={cn(active ? "text-white" : "text-green-500")} />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
           </div>
         </div>
 
         {/* Main Content Area */}
         <div className="lg:col-span-3 space-y-8">
-          <AnimatePresence mode="wait">
-            {!showQuiz ? (
+          {isLocked ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="glass p-12 text-center space-y-8 rounded-[2.5rem]"
+            >
+              <div className="w-20 h-20 bg-primary/10 text-primary dark:text-sage rounded-full flex items-center justify-center mx-auto">
+                <Lock size={40} />
+              </div>
+              <div className="space-y-4">
+                <h2 className="text-3xl font-display font-bold">Module Locked</h2>
+                <p className="text-xl text-primary/60 dark:text-sage max-w-md mx-auto">
+                  Please complete the previous module before continuing.
+                </p>
+              </div>
+              <button 
+                onClick={() => {
+                  const idx = course.modules.findIndex(m => m.id === moduleId);
+                  if (idx > 0) {
+                    navigate(`/learning/${courseId}/${course.modules[idx-1].id}`);
+                  }
+                }}
+                className="btn-premium bg-primary text-white px-8 py-3 rounded-full"
+              >
+                Go to Previous Module
+              </button>
+            </motion.div>
+          ) : (
+            <AnimatePresence mode="wait">
+              {!showQuiz ? (
               <motion.div
                 key={currentTopicIndex === -1 ? 'overview' : currentTopic?.id}
                 initial={{ opacity: 0, x: 20 }}
@@ -669,6 +726,7 @@ const Learning = () => {
               </motion.div>
             )}
           </AnimatePresence>
+          )}
         </div>
       </div>
     </div>
