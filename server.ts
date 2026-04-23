@@ -11,55 +11,56 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Vite middleware for development
+  let vite: any;
+
   if (process.env.NODE_ENV !== "production") {
-    console.log("Starting in development mode...");
-    const vite = await createViteServer({
+    // 1. Create Vite server in middleware mode
+    vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
+
+    // 2. Use vite's connect instance as middleware
     app.use(vite.middlewares);
-
-    // Handle SPA routing in development
-    app.get('*', async (req, res, next) => {
-      const url = req.originalUrl;
-      try {
-        // 1. Read index.html
-        let template = fs.readFileSync(
-          path.resolve(__dirname, 'index.html'),
-          'utf-8'
-        );
-
-        // 2. Apply Vite HTML transforms. This injects the Vite HMR client, and
-        //    also applies HTML transforms from Vite plugins, e.g. global preambles
-        //    from @vitejs/plugin-react
-        template = await vite.transformIndexHtml(url, template);
-
-        // 3. Send the rendered HTML back.
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-      } catch (e) {
-        // If an error is caught, let Vite fix the stack trace so it maps back
-        // to your actual source code.
-        if (e instanceof Error) {
-          vite.ssrFixStacktrace(e);
-        }
-        next(e);
-      }
-    });
   } else {
-    console.log("Starting in production mode...");
-    // Serve static files from the dist directory in production
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    
-    // Handle SPA routing: serve index.html for all unknown routes
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
+    // Serve static files in production
+    const distPath = path.resolve(__dirname, 'dist');
+    app.use(express.static(distPath, { index: false }));
   }
 
+  // API routes would go here (before the catch-all)
+
+  // 3. The Catch-all handler for SPA
+  app.get('*', async (req, res, next) => {
+    const url = req.originalUrl;
+    
+    // Skip if it's a file request that wasn't caught by static/vite (e.g. .js, .css)
+    if (url.includes('.') && !url.endsWith('.html')) {
+      return next();
+    }
+
+    try {
+      let template: string;
+      if (process.env.NODE_ENV !== "production") {
+        // Development: Always read fresh index.html from root
+        template = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf-8');
+        template = await vite.transformIndexHtml(url, template);
+      } else {
+        // Production: Read from dist
+        template = fs.readFileSync(path.resolve(__dirname, 'dist', 'index.html'), 'utf-8');
+      }
+
+      res.status(200).set({ 'Content-Type': 'text/html' }).send(template);
+    } catch (e) {
+      if (process.env.NODE_ENV !== "production" && vite) {
+        vite.ssrFixStacktrace(e as Error);
+      }
+      next(e);
+    }
+  });
+
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://0.0.0.0:${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
   });
 }
 
