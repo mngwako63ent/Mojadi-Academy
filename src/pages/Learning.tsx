@@ -45,6 +45,7 @@ const Learning = () => {
   const [loading, setLoading] = useState(true);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [isLocked, setIsLocked] = useState(false);
+  const [lockType, setLockType] = useState<'module' | 'course' | 'payment'>('module');
 
   const isModuleLocked = (mid: string) => {
     if (!course) return false;
@@ -64,17 +65,43 @@ const Learning = () => {
           return;
         }
 
-        if (courseId) {
+        if (courseId && course) {
+          // Check Course Lock (Prerequisite)
+          const courseIndex = courses.findIndex(c => c.id === courseId);
+          if (courseIndex > 0) {
+            const prevCourse = courses[courseIndex - 1];
+            const prevRef = doc(db, 'users', user.uid, 'enrollments', prevCourse.id);
+            const prevSnap = await getDoc(prevRef);
+            
+            if (!prevSnap.exists() || (prevSnap.data().completedModules?.length || 0) < prevCourse.modules.length) {
+              setIsLocked(true);
+              setLockType('course');
+              setLoading(false);
+              return;
+            }
+          }
+
           const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', courseId);
           const enrollmentSnap = await getDoc(enrollmentRef);
           if (enrollmentSnap.exists()) {
-            const completed = enrollmentSnap.data().completedModules || [];
+            const data = enrollmentSnap.data();
+            
+            // Check Access Status (Payment)
+            if (data.accessStatus !== 'active') {
+              setIsLocked(true);
+              setLockType('payment');
+              setLoading(false);
+              return;
+            }
+
+            const completed = data.completedModules || [];
             setCompletedModules(completed);
             
-            // Re-check lock with fresh data
+            // Re-check module lock with fresh data
             const idx = course.modules.findIndex(m => m.id === moduleId);
             if (idx > 0 && !completed.includes(course.modules[idx-1].id)) {
               setIsLocked(true);
+              setLockType('module');
             } else {
               setIsLocked(false);
             }
@@ -94,6 +121,16 @@ const Learning = () => {
   }
 
   const currentTopic = module.topics[currentTopicIndex];
+
+  const getModuleNumber = (title: string, index: number) => {
+    const match = title.match(/Module\s+(\d+):/i);
+    return match ? match[1] : (index + 1).toString();
+  };
+
+  const getModuleTitle = (title: string, index: number) => {
+    const num = getModuleNumber(title, index);
+    return title.replace(`Module ${num}: `, '').replace(`Module ${num}:`, '').trim();
+  };
 
   const handleNextTopic = () => {
     if (currentTopicIndex < module.topics.length - 1) {
@@ -136,12 +173,18 @@ const Learning = () => {
 
     if (allCorrect) {
       if (user && courseId) {
+        const isAlreadyCompleted = completedModules.includes(module.id);
+        const newCompletedModules = isAlreadyCompleted ? completedModules : [...completedModules, module.id];
+        
         const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', courseId);
         await updateDoc(enrollmentRef, {
           completedModules: arrayUnion(module.id),
-          progress: Math.round(((completedModules.length + 1) / course.modules.length) * 100)
+          progress: Math.round((newCompletedModules.length / course.modules.length) * 100)
         });
-        setCompletedModules(prev => [...prev, module.id]);
+        
+        if (!isAlreadyCompleted) {
+          setCompletedModules(newCompletedModules);
+        }
       }
     }
   };
@@ -206,9 +249,9 @@ const Learning = () => {
                             "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5",
                             active ? "bg-white/20" : "bg-black/10 dark:bg-white/10"
                           )}>
-                            {locked ? <Lock size={12} /> : idx + 6}
+                            {locked ? <Lock size={12} /> : getModuleNumber(m.title, idx)}
                           </div>
-                          <span className="text-sm font-medium leading-snug flex-grow">{m.title.replace('Module ' + (idx + 6) + ': ', '')}</span>
+                          <span className="text-sm font-medium leading-snug flex-grow">{getModuleTitle(m.title, idx)}</span>
                           {completed && (
                             <CheckCircle2 size={16} className={cn(active ? "text-white" : "text-green-500")} />
                           )}
@@ -231,21 +274,31 @@ const Learning = () => {
                 <Lock size={40} />
               </div>
               <div className="space-y-4">
-                <h2 className="text-3xl font-display font-bold">Module Locked</h2>
+                <h2 className="text-3xl font-display font-bold">
+                  {lockType === 'course' ? 'Course Locked' : lockType === 'payment' ? 'Payment Required' : 'Module Locked'}
+                </h2>
                 <p className="text-xl text-primary/60 dark:text-sage max-w-md mx-auto">
-                  Please complete the previous module before continuing.
+                  {lockType === 'course' 
+                    ? "Complete the previous course to unlock this one." 
+                    : lockType === 'payment'
+                    ? "Please complete payment to access this course."
+                    : "Please complete the previous module before continuing."}
                 </p>
               </div>
               <button 
                 onClick={() => {
-                  const idx = course.modules.findIndex(m => m.id === moduleId);
-                  if (idx > 0) {
-                    navigate(`/learning/${courseId}/${course.modules[idx-1].id}`);
+                  if (lockType === 'course' || lockType === 'payment') {
+                    navigate('/courses');
+                  } else {
+                    const idx = course.modules.findIndex(m => m.id === moduleId);
+                    if (idx > 0) {
+                      navigate(`/learning/${courseId}/${course.modules[idx-1].id}`);
+                    }
                   }
                 }}
                 className="btn-premium bg-primary text-white px-8 py-3 rounded-full"
               >
-                Go to Previous Module
+                {lockType === 'course' || lockType === 'payment' ? 'Browse Courses' : 'Go to Previous Module'}
               </button>
             </motion.div>
           ) : (

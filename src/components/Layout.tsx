@@ -37,11 +37,20 @@ export const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Courses', path: '/courses' },
     { name: 'Dashboard', path: '/dashboard', auth: true },
+    { name: 'Admin Panel', path: '/admin/payments', admin: true },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
 
   if (!mounted) return null;
+
+  const isAdmin = userProfile?.role === 'admin' || (user?.email === 'M.ngwako63@gmail.com' || user?.email === 'admin@mojadiacademy.com');
+
+  const filteredLinks = navLinks.filter(link => {
+    if (link.admin) return isAdmin;
+    if (link.auth) return !!user;
+    return true;
+  });
 
   return (
     <nav
@@ -62,7 +71,7 @@ export const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.filter(link => !link.auth || user).map((link) => (
+          {filteredLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
@@ -142,7 +151,7 @@ export const Navbar = () => {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-full left-0 right-0 glass border-t border-white/10 md:hidden p-6 flex flex-col gap-4"
           >
-            {navLinks.filter(link => !link.auth || user).map((link) => (
+            {filteredLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}

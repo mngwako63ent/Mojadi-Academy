@@ -64,6 +64,835 @@ export interface Course {
 
 export const courses: Course[] = [
   {
+    id: 'basic-crop-production',
+    title: 'Introduction to Crop Production - Level 1',
+    description: 'A foundational course for absolute beginners, smallholder farmers, and aspiring agricultural entrepreneurs. Learn the backbone of food systems, tool safety, soil preparation, and crop care.',
+    category: 'Crop Production',
+    level: 'Beginner',
+    duration: '8-10 Weeks',
+    price: 1200,
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800',
+    rating: 4.8,
+    students: 245,
+    learningObjectives: [
+      'Define crop production and explain its importance in food security and the economy',
+      'Identify, use, and maintain common farm tools safely',
+      'Describe different soil types and perform basic soil preparation',
+      'Select quality seeds, test germination, and apply correct planting techniques',
+      'Monitor crops for water stress, weed pressure, and early signs of pests'
+    ],
+    modules: [
+      {
+        id: 'module-1',
+        title: 'Module 1: What is Crop Production?',
+        description: 'Foundational knowledge about agriculture, food security, and career opportunities.',
+        introduction: `
+This module opens learners to the world of agriculture. Before picking up a tool or planting a seed, learners must understand why crop production matters, what categories of crops exist, and what a farming career can look like. This foundational knowledge provides the 'why' before all the practical 'how' that follows.
+        `,
+        duration: '3–4 hours',
+        learningObjectives: [
+          'Define crop production and its scope',
+          'Classify different types of crops and their uses',
+          'Understand the four pillars of food security',
+          'Identify career opportunities within the agricultural value chain',
+          'Distinguish between subsistence and commercial farming'
+        ],
+        topics: [
+          {
+            id: 'topic-1-1',
+            title: '1.1 Definition and Scope of Crop Production',
+            order: 1,
+            duration: '30 mins',
+            content: `
+Crop production is the science and practice of growing plants for food, fibre, feed, fuel, and other uses. It is one of the oldest human activities and remains the backbone of global food systems today.
+
+Crop production involves a series of deliberate management decisions — from selecting what to grow, preparing the land, nurturing the plants through their growth cycle, and ultimately harvesting and storing what is produced. Every step requires knowledge, planning, and skill.
+
+The scope of crop production includes:
+- **Field crops**: maize, wheat, rice, soya
+- **Vegetable crops**: tomatoes, spinach, onions, peppers
+- **Fruit crops**: mango, banana, citrus, avocado
+- **Industrial crops**: cotton, sugarcane, tobacco
+- **Cover and forage crops**: lucerne, clover, ryegrass
+
+> **Key Fact**: Agriculture employs over 1 billion people worldwide and contributes significantly to GDP in developing nations. In sub-Saharan Africa alone, agriculture supports the livelihoods of over 60% of the population.
+            `
+          },
+          {
+            id: 'topic-1-2',
+            title: '1.2 Types of Crops and Their Uses',
+            order: 2,
+            duration: '30 mins',
+            content: `
+Crops are classified in several ways — by use, by growth habit, and by season. Understanding these categories helps farmers make better decisions about what to grow and how to manage it.
+
+By use:
+- **Food crops**: grown primarily for human consumption (maize, cassava, beans, vegetables)
+- **Cash crops**: grown primarily for sale and income generation (tobacco, tea, flowers, cotton)
+- **Forage/feed crops**: grown to feed livestock (sorghum, oats, lucerne)
+- **Cover crops**: grown to protect and improve soil between main crop seasons (legumes, ryegrass)
+- **Industrial crops**: used as raw material in manufacturing (sugarcane for ethanol, cotton for textiles)
+            `
+          },
+          {
+            id: 'topic-1-3',
+            title: '1.3 Crop Production and Food Security',
+            order: 3,
+            duration: '30 mins',
+            content: `
+Food security exists when all people, at all times, have physical, social, and economic access to sufficient, safe, and nutritious food. Crop production is the primary means by which this security is achieved.
+
+The four pillars of food security are:
+- **Availability**: is food being produced in sufficient quantities?
+- **Access**: can people afford or reach the food that is available?
+- **Utilisation**: is the food nutritious and safely prepared?
+- **Stability**: are food supplies consistent across seasons and years?
+
+Crop production directly impacts all four pillars. A skilled crop farmer who consistently produces quality yields contributes meaningfully to their household, community, and nation's food security.
+
+> **Discussion Prompt**: Think about three foods you ate yesterday. Which of them came from crops? Could you grow any of them where you live? What conditions would you need?
+            `
+          },
+          {
+            id: 'topic-1-4',
+            title: '1.4 Overview of the Farming Calendar and Crop Cycle',
+            order: 4,
+            duration: '30 mins',
+            content: `
+Every crop follows a growth cycle, and every farm follows a seasonal calendar. Understanding these cycles is fundamental to planning and managing a farm effectively.
+
+The basic crop growth stages are:
+1. **Germination**: the seed sprouts and the first root and shoot emerge
+2. **Seedling stage**: young plant establishes and grows early leaves
+3. **Vegetative growth**: the plant grows rapidly, producing stems and leaves
+4. **Flowering**: reproductive structures appear
+5. **Fruit/grain set**: pollination occurs and the crop develops its yield
+6. **Maturation**: the crop reaches harvest readiness
+7. **Harvest and postharvest**: the crop is collected and processed
+
+The farming calendar layers this crop cycle onto the seasons of the year, accounting for rainfall, temperature, and market timing. Good farmers plan months in advance.
+            `
+          },
+          {
+            id: 'topic-1-5',
+            title: '1.5 Career Opportunities in Agriculture',
+            order: 5,
+            duration: '30 mins',
+            content: `
+A crop production qualification opens doors to a wide range of careers. Agriculture is not just farming — it is a value chain that includes input supply, production, processing, distribution, and retail.
+
+Career paths available to crop production learners include:
+- **Farmer / Smallholder grower**: managing your own production enterprise
+- **Farm worker / Farm hand**: skilled field labour on commercial farms
+- **Nursery operator**: propagating seedlings and plants for sale
+- **Agricultural extension officer**: advising and supporting other farmers
+- **Input supplier / Agrodealer**: selling seeds, fertiliser, and chemicals
+- **Farm manager**: overseeing labour, resources, and production planning
+- **Agricultural researcher or student**: advancing into higher learning
+            `
+          },
+          {
+            id: 'topic-1-6',
+            title: '1.6 Subsistence vs. Commercial Farming',
+            order: 6,
+            duration: '30 mins',
+            content: `
+Farmers operate at different scales and with different goals. Understanding the distinction between subsistence and commercial farming helps learners identify where they sit and where they want to go.
+
+| Feature | Subsistence Farming | Commercial Farming |
+| :--- | :--- | :--- |
+| **Goal** | Feed the family | Produce for market sale |
+| **Scale** | Small plot (< 1 ha) | Medium to large scale |
+| **Technology** | Mostly manual tools | Machinery and equipment |
+| **Income** | Little or no cash income | Primary income source |
+| **Risk** | Lower investment risk | Higher financial risk |
+            `
+          }
+        ],
+        quiz: [
+          {
+            id: 'q1-1',
+            question: 'Which of the following BEST defines crop production?',
+            options: [
+              'The process of harvesting wild plants from nature',
+              'The deliberate cultivation of plants for food, fibre, fuel, or feed',
+              'The breeding of animals for human consumption',
+              'The processing of raw food in factories'
+            ],
+            correctAnswer: 1,
+            explanation: 'Crop production is specifically about the deliberate cultivation of plants for various uses like food, fiber, and fuel.'
+          },
+          {
+            id: 'q1-2',
+            question: 'Maize grown primarily to sell at the market for income is best classified as a:',
+            options: [
+              'Cover crop',
+              'Forage crop',
+              'Cash crop',
+              'Industrial crop'
+            ],
+            correctAnswer: 2,
+            explanation: 'Cash crops are grown primarily for sale and income generation.'
+          },
+          {
+            id: 'q1-3',
+            question: 'Which of the following is NOT one of the four pillars of food security?',
+            options: [
+              'Availability',
+              'Profitability',
+              'Stability',
+              'Access'
+            ],
+            correctAnswer: 1,
+            explanation: 'The four pillars are Availability, Access, Utilisation, and Stability. Profitability is not a core pillar of food security itself.'
+          },
+          {
+            id: 'q1-4',
+            question: 'What is the FIRST stage of the crop growth cycle?',
+            options: [
+              'Vegetative growth',
+              'Flowering',
+              'Germination',
+              'Fruit set'
+            ],
+            correctAnswer: 2,
+            explanation: 'The crop cycle begins with germination, when the seed sprouts.'
+          },
+          {
+            id: 'q1-5',
+            question: 'Which crop type is primarily grown to protect and improve the soil between main crop seasons?',
+            options: [
+              'Food crop',
+              'Cover crop',
+              'Cash crop',
+              'Industrial crop'
+            ],
+            correctAnswer: 1,
+            explanation: 'Cover crops are grown between seasons specifically for soil protection and improvement.'
+          },
+          {
+            id: 'q1-6',
+            question: 'A farmer who grows only enough food to feed their family with little surplus for sale is practicing:',
+            options: [
+              'Commercial farming',
+              'Industrial farming',
+              'Subsistence farming',
+              'Precision farming'
+            ],
+            correctAnswer: 2,
+            explanation: 'Subsistence farming targets feeding the family rather than the market.'
+          },
+          {
+            id: 'q1-7',
+            question: 'Which of the following is an example of an industrial crop?',
+            options: [
+              'Spinach',
+              'Lucerne',
+              'Sugarcane',
+              'Cassava'
+            ],
+            correctAnswer: 2,
+            explanation: 'Sugarcane is an industrial crop often used for ethanol production or sugar manufacturing.'
+          },
+          {
+            id: 'q1-8',
+            question: 'During which crop growth stage does pollination occur and yields begin to develop?',
+            options: [
+              'Germination',
+              'Seedling stage',
+              'Fruit/grain set',
+              'Vegetative growth'
+            ],
+            correctAnswer: 2,
+            explanation: 'Pollination and initial yield development happen during the fruit or grain set stage.'
+          },
+          {
+            id: 'q1-9',
+            question: 'An agricultural extension officer\'s primary role is to:',
+            options: [
+              'Sell seeds and fertilisers to farmers',
+              'Advise and provide technical support to farmers',
+              'Operate harvesting machinery on large farms',
+              'Manage farm finances and bank accounts'
+            ],
+            correctAnswer: 1,
+            explanation: 'Extension officers provide technical support and advice to help farmers improve their practices.'
+          },
+          {
+            id: 'q1-10',
+            question: 'Which of the following BEST describes the purpose of a farming calendar?',
+            options: [
+              'To record daily weather observations',
+              'To track the prices of crops at the market',
+              'To plan crop activities across seasons and the year',
+              'To record the names of all farm workers'
+            ],
+            correctAnswer: 2,
+            explanation: 'A farming calendar is used for planning seasonal agricultural activities.'
+          }
+        ],
+        assessment: {
+          id: 'assessment-1',
+          title: 'Module 1 Assessment: Written Reflection',
+          description: 'This assessment requires you to reflect on what you have learned and apply it to your own context.',
+          type: 'report',
+          sections: [
+            {
+              title: 'Part B — Written Reflection',
+              questions: [
+                {
+                  label: 'Reflection 1',
+                  text: 'Choose ONE food crop that you or your family regularly eats. Identify which type of crop it is (food, cash, cover, forage, or industrial), describe one stage of its growth cycle, and explain how its production contributes to food security in your community.'
+                },
+                {
+                  label: 'Reflection 2',
+                  text: 'Based on what you have learned about career opportunities in crop production, identify ONE career pathway that interests you most. Explain why it appeals to you and what skills from this course you believe would help you pursue it.'
+                }
+              ]
+            }
+          ]
+        },
+        answerGuide: `
+### Module 1 Memorandum — What is Crop Production?
+Level 1: Basic  |  Total marks: 20  |  Pass: 14/20 (70%)
+
+Part A — Knowledge Quiz: Q1: b | Q2: c | Q3: b | Q4: c | Q5: b | Q6: c | Q7: c | Q8: c | Q9: b | Q10: c
+
+Part B — Written Reflection Rubric:
+Reflection 1 (5 marks): 
+- 2 marks for correct crop type identification.
+- 2 marks for correct description of growth stage.
+- 1 mark for connection to food security (Availability, Access, or Utilisation).
+
+Reflection 2 (5 marks):
+- 1 mark for naming a valid career from the taught list.
+- 2 marks for personal justification of appeal.
+- 2 marks for linking course skills to the career.
+        `
+      },
+      {
+        id: 'module-2',
+        title: 'Module 2: Farm Tools & Equipment',
+        description: 'Identification, safe use, and maintenance of essential farming implements.',
+        introduction: `
+Every skilled farmer knows their tools. Using the right tool correctly, maintaining it properly, and storing it safely are basic but essential competencies that reduce injuries, save money, and improve farm efficiency. This module ensures learners can identify, use, and care for the tools they will encounter on any farm.
+        `,
+        duration: '4–5 hours',
+        learningObjectives: [
+          'Identify common hand tools and their specific uses',
+          'Understand the role of small machinery and power tools',
+          'Follow safety rules and use appropriate PPE',
+          'Perform basic maintenance: cleaning, oiling, and sharpening',
+          'Implement proper storage practices for tools and equipment'
+        ],
+        topics: [
+          {
+            id: 'topic-2-1',
+            title: '2.1 Hand Tools: Hoes, Spades, Rakes, Trowels',
+            order: 1,
+            duration: '45 mins',
+            content: `
+Hand tools are the most widely used implements on smallholder and subsistence farms. They are human-powered, affordable, and versatile.
+
+| Tool | Primary Use | Key Usage Tip |
+| :--- | :--- | :--- |
+| **Hoe** | Weeding, soil loosening, ridging | Keep blade sharp; use your body weight, not just arms |
+| **Spade** | Digging, turning soil, transplanting | Push with your foot; do not lever on the handle |
+| **Fork** | Breaking clods, aerating soil | Best used after initial digging with a spade |
+| **Rake** | Levelling seedbeds, removing debris | Work backwards to avoid stepping on prepared beds |
+| **Trowel** | Transplanting seedlings, small digging | Ideal for nursery and container work |
+| **Watering can** | Manual irrigation of young seedlings | Use a rose head nozzle to avoid damaging seedlings |
+            `
+          },
+          {
+            id: 'topic-2-2',
+            title: '2.2 Power Tools and Small Machinery',
+            order: 2,
+            duration: '45 mins',
+            content: `
+As farms grow in scale, power tools and small machinery improve efficiency.
+
+- **Motorised sprayer**: applies pesticides or fertilisers over larger areas faster than a hand sprayer
+- **Brush cutter / slasher**: clears grass and light bush before planting
+- **Hand tractor / Power tiller**: mechanises soil preparation on small to medium plots
+- **Irrigation pump**: draws water from boreholes, rivers, or storage tanks for crop watering
+- **Thresher**: separates grain from stalks after harvest (maize, sorghum, sunflower)
+
+> **Safety Note**: Always receive proper training before operating motorised equipment. Ensure equipment is switched off and the engine is cool before attempting cleaning or maintenance.
+            `
+          },
+          {
+            id: 'topic-2-3',
+            title: '2.3 Safety Rules and PPE in Farm Settings',
+            order: 3,
+            duration: '45 mins',
+            content: `
+Farm accidents are common but largely preventable. PPE and good safety habits protect you and others.
+
+**Required PPE by task:**
+- **Spraying chemicals**: gloves, goggles, face mask/respirator, protective overalls, gumboots
+- **Slashing and brush cutting**: safety boots, gloves, eye protection, long sleeves
+- **General field work**: hat, sun-protective clothing, closed-toed shoes, gloves
+
+**General safety rules:**
+1. Inspect all tools before use — never use a cracked handle or broken blade
+2. Carry sharp tools with the cutting edge facing down and away from your body
+3. Never leave tools lying on the ground where others may step on them
+4. Keep children away from tool storage areas
+5. Wash hands thoroughly after handling chemicals or treated seeds
+            `
+          },
+          {
+            id: 'topic-2-4',
+            title: '2.4 Cleaning, Oiling, and Sharpening Tools',
+            order: 4,
+            duration: '45 mins',
+            content: `
+**After each use:**
+- Remove soil and debris with a brush or cloth
+- Rinse metal parts with water and dry completely
+- Apply a thin coat of oil (motor oil or WD-40) to metal surfaces to prevent rust
+- Inspect for damage: cracks, loose handles, bent blades
+
+**Periodic maintenance:**
+- Sharpen hoe and spade blades using a metal file — work at the existing bevel angle
+- Tighten handle screws and bolts; replace split or cracked handles immediately
+- Sand wooden handles and apply linseed oil to prevent cracking and splintering
+            `
+          },
+          {
+            id: 'topic-2-5',
+            title: '2.5 Proper Storage of Tools and Equipment',
+            order: 5,
+            duration: '45 mins',
+            content: `
+- Hang tools on wall hooks or a rack — never stack them in a pile
+- Store sharp tools with blade guards or wrap edges in cloth
+- Keep the tool storage area dry and ventilated to prevent rust
+- Lock the storage area to prevent theft and restrict unauthorised access
+- Label tools and keep an inventory list — especially on shared or community farms
+            `
+          },
+          {
+            id: 'topic-2-6',
+            title: '2.6 Selecting the Right Tool for the Right Job',
+            order: 6,
+            duration: '45 mins',
+            content: `
+Using the wrong tool for a task leads to poor results and unnecessary strain on the body.
+
+> **Practical Rule**: Ask three questions before selecting a tool: (1) What am I trying to do? (2) What is the scale of the task? (3) What surface or soil type am I working with?
+            `
+          }
+        ],
+        quiz: [],
+        assessment: {
+          id: 'assessment-2',
+          title: 'Module 2 Assessment: Tool ID & Safety',
+          description: 'Identify tools and complete a safety readiness checklist.',
+          type: 'selection',
+          sections: [
+            {
+              title: 'Part A — Tool Identification',
+              questions: [
+                { label: 'Tool 1', text: 'Used to level a seedbed and remove loose debris before planting' },
+                { label: 'Tool 2', text: 'A small hand-held digging tool ideal for transplanting seedlings into pots or beds' },
+                { label: 'Tool 3', text: 'Used to loosen soil around growing plants without damaging their roots' },
+                { label: 'Tool 4', text: 'Used to dig planting holes or turn over large areas of soil' },
+                { label: 'Tool 5', text: 'A powered tool used to apply liquid pesticide evenly over a crop' }
+              ]
+            },
+            {
+              title: 'Part B — Safety Checklist',
+              questions: [
+                { label: 'Check 1', text: 'All tools inspected for cracks, loose handles, or damage?' },
+                { label: 'Check 2', text: 'Sharp tools carried with cutting edge facing down/away?' },
+                { label: 'Check 3', text: 'Appropriate PPE selected for today\'s tasks?' },
+                { label: 'Check 4', text: 'First aid kit location known and accessible?' },
+                { label: 'Check 5', text: 'Chemical equipment rinsed and checked before use?' }
+              ]
+            }
+          ]
+        },
+        answerGuide: `
+### Module 2 Memorandum — Farm Tools & Equipment
+Level 1: Basic  |  Total marks: 15  |  Pass: 11/15 (70%)
+
+Part A — Tool Identification: 1. Rake | 2. Trowel | 3. Hoe | 4. Spade | 5. Motorised sprayer
+
+Part B — Safety Checklist: 2 marks per checklist item (1 for tick, 1 for note).
+        `
+      },
+      {
+        id: 'module-3',
+        title: 'Module 3: Understanding Soil',
+        description: 'Soil components, types, pH, fertility, and land preparation.',
+        introduction: `
+Soil is the foundation of all crop production. Without understanding soil — what it is made of, how it behaves, and how to prepare and improve it — a farmer cannot consistently produce good crops. This module gives learners the knowledge to look at soil and understand what it is telling them.
+        `,
+        duration: '5–6 hours',
+        learningObjectives: [
+          'Identify the four core components of soil',
+          'Recognize different soil types by texture and feel',
+          'Understand soil pH and its impact on nutrient availability',
+          'Identify indicators of fertile soil',
+          'Master land clearing and primary/secondary tillage techniques'
+        ],
+        topics: [
+          {
+            id: 'topic-3-1',
+            title: '3.1 What Soil is Made Of',
+            order: 1,
+            duration: '1 hour',
+            content: `
+Soil is a complex mixture of four components that work together to support plant life:
+- **Minerals (45%)**: broken-down rock particles that form the physical structure
+- **Organic matter (5%)**: decomposed plant and animal material providing nutrients
+- **Water (25%)**: held in soil pores and taken up by plant roots
+- **Air (25%)**: essential for root respiration and soil organisms
+
+Healthy soil is alive, containing billions of organisms like bacteria, fungi, and earthworms.
+            `
+          },
+          {
+            id: 'topic-3-2',
+            title: '3.2 Types of Soil and Their Properties',
+            order: 2,
+            duration: '1 hour',
+            content: `
+| Soil Type | Feel | Drainage | Fertility |
+| :--- | :--- | :--- | :--- |
+| **Sandy** | Gritty, loose | Drains very fast; dries quickly | Low — nutrients leach away |
+| **Clay** | Sticky, heavy | Drains slowly; waterlogging risk | High — nutrients retained |
+| **Silt** | Smooth, floury | Moderate drainage | Moderate; compacts easily |
+| **Loam** | Crumbly, gritty | Good drainage and retention | High — ideal for most crops |
+
+> **Soil Texture Test**: Take moist soil, squeeze it into a ball. Sandy falls apart. Clay holds shape and feels sticky. Loam holds shape but crumbles when pressed.
+            `
+          },
+          {
+            id: 'topic-3-3',
+            title: '3.3 Soil pH and Why It Matters',
+            order: 3,
+            duration: '1 hour',
+            content: `
+pH measures acidity or alkalinity (0-14). Most crops prefer 5.5 to 7.0.
+- **Acidity (<5.5)**: can release toxic aluminium; locks away nutrients. Fix with **agricultural lime**.
+- **Alkalinity (>7.5)**: can also lock away nutrients. Fix with **sulphur or compost**.
+            `
+          },
+          {
+            id: 'topic-3-4',
+            title: '3.4 What Makes Soil Fertile',
+            order: 4,
+            duration: '1 hour',
+            content: `
+Key indicators of fertile soil:
+- **Dark colour**: high organic matter.
+- **Crumbly structure**: good tilth for root penetration.
+- **Earthworms**: healthy soil biology.
+- **Good water infiltration**: water sinks in rather than running off.
+            `
+          },
+          {
+            id: 'topic-3-5',
+            title: '3.5 Land Clearing and Primary Tillage',
+            order: 5,
+            duration: '1 hour',
+            content: `
+- **Land clearing**: removing vegetation manually or mechanically. Avoid burning residues.
+- **Primary tillage**: deep soil turning (20-30 cm) using a plough or spade to break compaction.
+            `
+          },
+          {
+            id: 'topic-3-6',
+            title: '3.6 Secondary Tillage: Harrowing and Bed Prep',
+            order: 6,
+            duration: '1 hour',
+            content: `
+- **Harrowing/Raking**: breaks clods and levels the surface.
+- **Ridging**: raised rows for crops like potatoes; improves drainage.
+- **Bed preparation**: standard 1-1.2m widths for easy access in horticulture.
+            `
+          }
+        ],
+        quiz: [],
+        assessment: {
+          id: 'assessment-3',
+          title: 'Module 3 Assessment: Soil Analysis',
+          description: 'Identify soil types from scenarios and describe land preparation steps.',
+          type: 'scenario',
+          sections: [
+            {
+              title: 'Part A — Soil Type Identification',
+              questions: [
+                { label: 'Scenario 1', text: 'Water pools on the surface 3 hours after rain. Soil forms a long ribbon and feels sticky. Identify soil type and justify.' },
+                { label: 'Scenario 2', text: 'Crops are always dry. Soil crumbles immediately and feels rough/gritty. Identify soil type and justify.' }
+              ]
+            },
+            {
+              title: 'Part B — Soil Preparation',
+              questions: [
+                { label: 'Preparation Steps', text: 'A farmer wants to prepare a 500m² garden on unused land. Describe at least four steps in order and the purpose of each.' }
+              ]
+            }
+          ]
+        },
+        answerGuide: `
+### Module 3 Memorandum — Understanding Soil
+Level 1: Basic  |  Total marks: 15  |  Pass: 11/15 (70%)
+
+Scenario 1: CLAY (Sticky, long ribbon, slow drainage).
+Scenario 2: SANDY (Gritty, crumbles, fast drainage).
+Prep Steps: 1. Clearing, 2. Liming (if needed), 3. Primary Tillage, 4. Organic Matter, 5. Secondary Tillage.
+        `
+      },
+      {
+        id: 'module-4',
+        title: 'Module 4: Seeds & Planting',
+        description: 'Seed quality, germination, planting methods, and spacing.',
+        introduction: `
+The seed is where every crop begins. Making good decisions at the seed and planting stage sets the entire crop up for success or failure. This module teaches learners to select quality seeds, understand germination, and apply the right planting methods and spacing for common crops.
+        `,
+        duration: '5–6 hours',
+        learningObjectives: [
+          'Identify characteristics of high-quality seeds',
+          'Understand the essential conditions for germination',
+          'Perform a germination test and calculate the success rate',
+          'Compare different planting methods: broadcast, row, and dibbling',
+          'Apply correct spacing and planting density for various crops',
+          'Distinguish between direct seeding and transplanting'
+        ],
+        topics: [
+          {
+            id: 'topic-4-1',
+            title: '4.1 What Makes a Good Seed',
+            order: 1,
+            duration: '1 hour',
+            content: `
+Seed quality determines germination rates and plant vigour.
+- **High germination rate**: 80-90% success.
+- **Purity**: true to the variety.
+- **Disease-free**: no visible mould or rot.
+- **Certified**: from reputable suppliers.
+            `
+          },
+          {
+            id: 'topic-4-2',
+            title: '4.2 Germination: Stages and Conditions',
+            order: 2,
+            duration: '1 hour',
+            content: `
+**Essential conditions:**
+- **Water**: activates enzymes.
+- **Warmth**: optimal 18-25°C for most veg.
+- **Oxygen**: needed for respiration.
+
+**Stages**: Imbibition -> Activation -> Radicle emergence -> Shoot emergence -> Establishment.
+            `
+          },
+          {
+            id: 'topic-4-3',
+            title: '4.3 Seed Viability and Germination Testing',
+            order: 3,
+            duration: '1 hour',
+            content: `
+**Quick Test:**
+1. Count 20 seeds.
+2. Place on moist cloth/paper.
+3. Keep warm for several days.
+4. Count sprouts: **(Sprouted ÷ Total) × 100 = %**.
+
+> **Example**: 16/20 sprouted = 80%. Acceptable.
+            `
+          },
+          {
+            id: 'topic-4-4',
+            title: '4.4 Planting Methods: Broadcast, Row, Dibbling',
+            order: 4,
+            duration: '1 hour',
+            content: `
+- **Broadcasting**: scattering by hand (cover crops).
+- **Row planting**: straight lines; easier weeding.
+- **Dibbling**: individual holes; saves seed (maize, beans).
+- **Transplanting**: moving nursery seedlings to field.
+            `
+          },
+          {
+            id: 'topic-4-5',
+            title: '4.5 Spacing and Planting Density',
+            order: 5,
+            duration: '1 hour',
+            content: `
+| Crop | Row Spacing | Plant Spacing | Depth |
+| :--- | :--- | :--- | :--- |
+| **Maize** | 75–90 cm | 25–30 cm | 5–7 cm |
+| **Tomato** | 75 cm | 45–60 cm | Cotyledon level |
+| **Beans** | 45–60 cm | 10–15 cm | 3–5 cm |
+            `
+          },
+          {
+            id: 'topic-4-6',
+            title: '4.6 Direct Seeding vs. Transplanting',
+            order: 6,
+            duration: '1 hour',
+            content: `
+- **Direct Seeding**: easy; uses more seed; maize/beans/carrots.
+- **Transplanting**: uses less seed; better control; tomatoes/cabbage/onions.
+            `
+          }
+        ],
+        quiz: [],
+        assessment: {
+          id: 'assessment-4',
+          title: 'Module 4 Assessment: Planting Plan',
+          description: 'Conduct a germination test and design a garden planting plan.',
+          type: 'plan',
+          sections: [
+            {
+              title: 'Part A — Germination Test',
+              questions: [
+                { label: 'G-Test Results', text: 'Report your results: Seeds tested, number sprouted, and calculated rate. Would you use this batch?' }
+              ]
+            },
+            {
+              title: 'Part B — Planting Plan',
+              questions: [
+                { label: 'Garden Design', text: 'Design a 5m x 5m garden plan with at least two different crops, showing row/plant spacing and the planting method for each.' }
+              ]
+            }
+          ]
+        },
+        answerGuide: `
+### Module 4 Memorandum — Seeds & Planting
+Level 1: Basic  |  Total marks: 15  |  Pass: 11/15 (70%)
+
+G-Test: (Sprouted / Total) * 100. Benchmarked at 80%.
+Planting Plan: Check spacing against Topic 4.5 table.
+        `
+      },
+      {
+        id: 'module-5',
+        title: 'Module 5: Crop Care Basics',
+        description: 'Watering, weeding, pest monitoring, and field scouting.',
+        introduction: `
+Planting a crop is just the beginning. What happens next — watering, weeding, and monitoring for problems — determines whether that crop survives and thrives. This module equips learners with the observation skills and hands-on practices needed to care for crops through their growth cycle.
+        `,
+        duration: '4–5 hours',
+        learningObjectives: [
+          'Understand how crops use water across different growth stages',
+          'Identify signs of water stress (over or under)',
+          'Explain why weed management is essential for yield',
+          'Identify common crop pests and their symptoms',
+          'Implement regular crop scouting and observation routines'
+        ],
+        topics: [
+          {
+            id: 'topic-5-1',
+            title: '5.1 How Crops Use Water',
+            order: 1,
+            duration: '45 mins',
+            content: `
+Water is critical for nutrient transport and cooling.
+- **Seedlings**: frequent, light watering.
+- **Vegetative**: moderate, consistent.
+- **Flowering**: **CRITICAL** — stress reduces yield.
+- **Maturation**: reduced water often improves quality.
+            `
+          },
+          {
+            id: 'topic-5-2',
+            title: '5.2 Signs of Overwatering and Underwatering',
+            order: 2,
+            duration: '45 mins',
+            content: `
+| Sign | Underwatering | Overwatering |
+| :--- | :--- | :--- |
+| **Leaves** | Wilting, yellow edges | Yellowing, dropping off |
+| **Soil** | Dry, cracked | Soggy, foul-smelling |
+| **Roots** | Brown, dry | Brown, mushy/rotten |
+            `
+          },
+          {
+            id: 'topic-5-3',
+            title: '5.3 What Are Weeds and Why They Matter',
+            order: 3,
+            duration: '45 mins',
+            content: `
+Weeds compete for water, light, and nutrients. They can reduce yields by 30-80%.
+- **Categories**: Broadleaf (blackjack), Grasses (couch grass), Sedges (nutgrass).
+            `
+          },
+          {
+            id: 'topic-5-4',
+            title: '5.4 Manual Weeding Methods and Timing',
+            order: 4,
+            duration: '45 mins',
+            content: `
+- **Timing**: first 4-6 weeks are critical.
+- **Methods**: hand pulling (precise) or hoe weeding (efficient for rows).
+- **Rule**: weed before they set seed.
+            `
+          },
+          {
+            id: 'topic-5-5',
+            title: '5.5 Introduction to Common Pests',
+            order: 5,
+            duration: '45 mins',
+            content: `
+- **Aphids**: clusters on leaf undersides; sticky honeydew.
+- **Caterpillars/Armyworm**: ragged holes in leaves.
+- **Whitefly**: tiny white insects; yellowing leaves.
+- **Cutworm**: seedlings cut at soil level.
+            `
+          },
+          {
+            id: 'topic-5-6',
+            title: '5.6 Basic Scouting Practices',
+            order: 6,
+            duration: '45 mins',
+            content: `
+Scouting is systematic inspection.
+1. Walk the field 2x per week.
+2. Inspect sample plants in all areas.
+3. Check leaf undersides.
+4. Record observations.
+            `
+          }
+        ],
+        quiz: [],
+        assessment: {
+          id: 'assessment-5',
+          title: 'Module 5 Assessment: Scouting Log',
+          description: 'Keep a 7-day observation log and identify pests from scenarios.',
+          type: 'scenario',
+          sections: [
+            {
+              title: 'Part A — Scouting Log',
+              questions: [
+                { label: 'Log', text: 'Submit a 4-day entry log showing crop status, water status, and actions taken.' }
+              ]
+            },
+            {
+              title: 'Part B — Pest/Weed ID',
+              questions: [
+                { label: 'Scenario 1', text: 'Seedlings cut off at soil level overnight; grey grub in soil. ID the pest and action.' },
+                { label: 'Scenario 2', text: '4-week maize with ragged holes and caterpillars in the whorl. ID the pest.' },
+                { label: 'Scenario 3', text: 'Flowering weeds in a veg bed. Why is it urgent and what method should be used?' }
+              ]
+            }
+          ]
+        },
+        answerGuide: `
+### Module 5 Memorandum — Crop Care Basics
+Level 1: Basic  |  Total marks: 15  |  Pass: 11/15 (70%)
+
+Pests: 1. Cutworm, 2. Fall Armyworm, 3. Flowering weeds (seed set multiplication).
+        `
+      }
+    ]
+  },
+  {
     id: 'intermediate-crop-production',
     title: 'Intermediate Crop Production',
     description: 'Master the core principles of crop production, from soil health and irrigation to pest management and post-harvest handling. This course provides practical, actionable knowledge for commercial farming success.',

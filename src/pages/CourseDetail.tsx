@@ -5,52 +5,95 @@ import { ArrowLeft, Star, Clock, BarChart, CheckCircle2, Users, BookOpen, Video,
 import { courses } from '../data/courses';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { cn } from '../lib/utils';
+import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { cn, formatPrice } from '../lib/utils';
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const course = courses.find((c) => c.id === id);
+  const courseIndex = courses.findIndex(c => c.id === id);
+  
   const [isEnrolled, setIsEnrolled] = React.useState(false);
+  const [existingOrder, setExistingOrder] = React.useState<any>(null);
   const [completedModules, setCompletedModules] = React.useState<string[]>([]);
+  const [isLocked, setIsLocked] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    const checkEnrollment = async () => {
+    const checkStatus = async () => {
       if (user && id) {
+        // Check current enrollment
         const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', id);
         const enrollmentSnap = await getDoc(enrollmentRef);
+        
         if (enrollmentSnap.exists()) {
           setIsEnrolled(true);
           setCompletedModules(enrollmentSnap.data().completedModules || []);
         } else {
           setIsEnrolled(false);
           setCompletedModules([]);
+          
+          // Check for existing order
+          const q = query(collection(db, 'orders'), where('userId', '==', user.uid), where('courseId', '==', id));
+          const orderSnap = await getDocs(q);
+          if (!orderSnap.empty) {
+            setExistingOrder({ id: orderSnap.docs[0].id, ...orderSnap.docs[0].data() });
+          }
+        }
+
+        // Check prerequisite course
+        if (courseIndex > 0) {
+          const prevCourse = courses[courseIndex - 1];
+          const prevRef = doc(db, 'users', user.uid, 'enrollments', prevCourse.id);
+          const prevSnap = await getDoc(prevRef);
+          
+          if (!prevSnap.exists() || (prevSnap.data().completedModules?.length || 0) < prevCourse.modules.length) {
+            setIsLocked(true);
+          }
         }
       }
       setLoading(false);
     };
-    checkEnrollment();
-  }, [user, id]);
+    checkStatus();
+  }, [user, id, courseIndex]);
 
   const handleEnroll = async () => {
-    if (!user) {
+    if (!user || !userProfile) {
       navigate('/login', { state: { from: `/courses/${id}` } });
       return;
     }
 
+    if (isLocked) return;
+
     if (course) {
       try {
-        await setDoc(doc(db, 'users', user.uid, 'enrollments', course.id), {
-          courseId: course.id,
-          enrolledAt: new Date().toISOString(),
-          progress: 0,
-          completedModules: []
-        });
-        setIsEnrolled(true);
-        navigate('/dashboard');
+        if (course.price === 0) {
+          // Free course: direct enrollment
+          await setDoc(doc(db, 'users', user.uid, 'enrollments', course.id), {
+            courseId: course.id,
+            enrolledAt: serverTimestamp(),
+            progress: 0,
+            completedModules: [],
+            accessStatus: 'active'
+          });
+          setIsEnrolled(true);
+          navigate('/dashboard');
+        } else {
+          // Paid course: create order first
+          const orderData = {
+            userId: user.uid,
+            studentId: userProfile.studentId,
+            courseId: course.id,
+            courseTitle: course.title,
+            price: course.price,
+            status: 'pending',
+            createdAt: serverTimestamp(),
+          };
+          const orderRef = await addDoc(collection(db, 'orders'), orderData);
+          navigate(`/payment/${orderRef.id}`);
+        }
       } catch (error) {
         console.error("Error enrolling in course:", error);
       }
@@ -68,13 +111,27 @@ const CourseDetail = () => {
     );
   }
 
+  if (loading) {
+    return <div className="pt-32 pb-32 text-center">Loading course...</div>;
+  }
+
   return (
     <div className="pt-32 pb-32 max-w-5xl mx-auto px-6">
       <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary transition-colors mb-8">
         <ArrowLeft size={20} /> Back to Courses
       </button>
 
-      <div className="space-y-8">
+      {isLocked && (
+        <div className="mb-8 p-6 bg-red-500/10 border border-red-500/20 rounded-3xl flex items-center gap-4 text-red-600">
+          <Lock size={24} />
+          <div>
+            <p className="font-bold">Course Locked</p>
+            <p className="text-sm">Complete the previous course to unlock this one.</p>
+          </div>
+        </div>
+      )}
+
+      <div className={cn("space-y-8", isLocked && "opacity-60 pointer-events-none grayscale")}>
         {/* Header */}
         <div className="space-y-4">
           <div className="flex gap-2">
@@ -96,7 +153,14 @@ const CourseDetail = () => {
         </div>
 
         {/* Image */}
-        <img src={course.image} alt={course.title} className="w-full h-96 object-cover rounded-[2rem]" referrerPolicy="no-referrer" />
+        <div className="relative rounded-[2rem] overflow-hidden">
+          <img src={course.image} alt={course.title} className="w-full h-96 object-cover" referrerPolicy="no-referrer" />
+          {isLocked && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <Lock size={48} className="text-white" />
+            </div>
+          )}
+        </div>
 
         {/* Main Content Grid */}
         <div className="grid md:grid-cols-3 gap-8">
@@ -123,13 +187,19 @@ const CourseDetail = () => {
           {/* Enrollment Card */}
           <div className="glass p-8 rounded-[2rem] h-fit sticky top-32">
             <h2 className="text-4xl font-bold mb-6">
-              {course.price === 0 ? 'Free' : `R${course.price.toLocaleString()}`}
+              {course.price === 0 ? 'Free' : formatPrice(course.price)}
             </h2>
             <button 
-              onClick={isEnrolled ? () => navigate(`/learning/${course.id}/${course.modules[0].id}`) : handleEnroll}
+              onClick={
+                isEnrolled 
+                  ? () => navigate(`/learning/${course.id}/${course.modules[0].id}`) 
+                  : existingOrder 
+                  ? () => navigate(`/payment/${existingOrder.id}`)
+                  : handleEnroll
+              }
               className="w-full btn-premium bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent dark:hover:bg-sage-bright text-lg py-4 mb-6 rounded-full"
             >
-              {isEnrolled ? 'Continue Learning' : 'Enroll Now'}
+              {isEnrolled ? 'Continue Learning' : existingOrder ? 'Finish Payment' : 'Enroll Now'}
             </button>
             <div className="space-y-4 text-sm text-primary/70 dark:text-sage">
               <p className="font-bold text-primary dark:text-sage">This course includes:</p>

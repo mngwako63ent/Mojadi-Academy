@@ -264,6 +264,29 @@ const Login = () => {
           <span className="font-medium">Google</span>
         </button>
 
+        <div className="space-y-4 pt-4">
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/5 dark:border-white/5"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-neutral-bg dark:bg-neutral-dark px-2 text-primary/40 dark:text-sage">Management Access</span>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => {
+              setEmail('admin@mojadiacademy.com');
+              setIsSignUp(false);
+              setError('Please enter the admin password.');
+            }}
+            type="button"
+            className="w-full py-3 rounded-2xl border-2 border-secondary/20 text-secondary font-bold hover:bg-secondary/5 transition-all text-sm"
+          >
+            MojadiAcademy Admin Login
+          </button>
+        </div>
+
         <p className="text-center text-sm text-primary/60 dark:text-sage">
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <button

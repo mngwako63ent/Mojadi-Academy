@@ -1,18 +1,68 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, SlidersHorizontal, LayoutGrid, List } from 'lucide-react';
+import { Search, LayoutGrid, List } from 'lucide-react';
 import { courses } from '../data/courses';
 import { CourseCard } from '../components/Cards';
 import { cn } from '../lib/utils';
+import { useAuth } from '../components/AuthContext';
+import { db } from '../lib/firebase';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 const Courses = () => {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [enrollments, setEnrollments] = useState<Record<string, any>>({});
+  const [loadingEnrollments, setLoadingEnrollments] = useState(true);
 
   const categories = ['All', ...new Set(courses.map(c => c.category))];
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
+
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      if (user) {
+        try {
+          const q = query(collection(db, 'users', user.uid, 'enrollments'));
+          const querySnapshot = await getDocs(q);
+          const enrollmentData: Record<string, any> = {};
+          querySnapshot.forEach((doc) => {
+            enrollmentData[doc.id] = doc.data();
+          });
+          setEnrollments(enrollmentData);
+        } catch (error) {
+          console.error("Error fetching enrollments:", error);
+        }
+      }
+      setLoadingEnrollments(false);
+    };
+    fetchEnrollments();
+  }, [user]);
+
+  const courseStatus = useMemo(() => {
+    const status: Record<string, { locked: boolean; completed: boolean }> = {};
+    
+    courses.forEach((course, index) => {
+      const enrollment = enrollments[course.id];
+      const isCompleted = enrollment?.completedModules?.length === course.modules.length;
+      
+      let isLocked = false;
+      if (index > 0) {
+        const prevCourse = courses[index - 1];
+        const prevEnrollment = enrollments[prevCourse.id];
+        const prevCompleted = prevEnrollment?.completedModules?.length === prevCourse.modules.length;
+        isLocked = !prevCompleted;
+      }
+
+      status[course.id] = {
+        locked: isLocked,
+        completed: isCompleted
+      };
+    });
+    
+    return status;
+  }, [enrollments]);
 
   const filteredCourses = useMemo(() => {
     return courses.filter(course => {
@@ -95,7 +145,11 @@ const Courses = () => {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              <CourseCard course={course} featured={view === 'list'} />
+              <CourseCard 
+                course={course} 
+                featured={view === 'list'} 
+                locked={courseStatus[course.id]?.locked} 
+              />
             </motion.div>
           ))}
         </AnimatePresence>

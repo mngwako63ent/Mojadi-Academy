@@ -10,6 +10,8 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Learning from './pages/Learning';
 import Dashboard from './pages/Dashboard';
+import Payment from './pages/Payment';
+import AdminPayments from './pages/AdminPayments';
 import { useAuth } from './components/AuthContext';
 import { Leaf } from 'lucide-react';
 
@@ -64,6 +66,8 @@ export default function App() {
               <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
               <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
               <Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
+              <Route path="/payment/:orderId" element={<PageWrapper><Payment /></PageWrapper>} />
+              <Route path="/admin/payments" element={<PageWrapper><AdminPayments /></PageWrapper>} />
               <Route path="/learning/:courseId/:moduleId" element={<PageWrapper><Learning /></PageWrapper>} />
             </Routes>
           </AnimatePresence>
