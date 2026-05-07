@@ -18,7 +18,10 @@ const About = () => {
             Cultivating Knowledge for a <span className="text-secondary">Sustainable</span> Future
           </h1>
           <p className="text-lg text-primary/70 dark:text-sage leading-relaxed">
-            Founded in 2015, Mojadi Academy began with a simple mission: to bridge the gap between traditional farming wisdom and modern agricultural science. We believe that every farmer, regardless of scale, deserves access to world-class education.
+            Mojadi Farm Holding Academy was established in 2025 with a clear and purposeful mission: to empower emerging and upcoming farmers through quality agricultural education. We operate as a fully digital learning institution, offering structured online courses that combine theoretical knowledge with practical insight.
+          </p>
+          <p className="text-lg text-primary/70 dark:text-sage leading-relaxed">
+            What sets us apart is our direct connection to active production facilities, enabling us to provide practical demonstrations of the concepts taught in our courses. These demonstration videos serve as a bridge between classroom learning and real-world farming practice.
           </p>
           <div className="grid grid-cols-2 gap-8">
             <div className="space-y-2">
@@ -26,14 +29,14 @@ const About = () => {
                 <Target size={24} />
               </div>
               <h4 className="font-bold">Our Mission</h4>
-              <p className="text-sm text-primary/60 dark:text-sage">To empower farmers with the tools and knowledge to thrive in a changing climate.</p>
+              <p className="text-sm text-primary/60 dark:text-sage">To empower emerging and upcoming farmers across South Africa with quality agricultural education.</p>
             </div>
             <div className="space-y-2">
               <div className="w-12 h-12 bg-primary/10 text-primary dark:text-sage rounded-xl flex items-center justify-center">
                 <History size={24} />
               </div>
-              <h4 className="font-bold">Our Vision</h4>
-              <p className="text-sm text-primary/60 dark:text-sage">A world where sustainable agriculture is the standard, not the exception.</p>
+              <h4 className="font-bold">Our Goal</h4>
+              <p className="text-sm text-primary/60 dark:text-sage">Deliver accredited agricultural knowledge through structured online courses that transform the agricultural sector.</p>
             </div>
           </div>
         </motion.div>

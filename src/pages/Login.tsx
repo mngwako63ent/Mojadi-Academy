@@ -66,19 +66,14 @@ const Login = () => {
 
     try {
       if (isSignUp) {
-        console.log("Attempting sign up with:", email);
         try {
           const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          console.log("Sign up successful, updating profile...");
           if (name) {
             await updateProfile(userCredential.user, { displayName: name });
           }
-          console.log("Profile updated, navigating...");
           navigate(from, { replace: true });
         } catch (err: any) {
-          console.error("Detailed Sign-Up Error:", err);
           const errorCode = err.code || (err.cause && (err.cause as any).code);
-          console.log("Error Code:", errorCode);
           
           if (errorCode === 'auth/email-already-in-use') {
             setError('User already exists. Sign in?');
@@ -91,21 +86,18 @@ const Login = () => {
           } else if (errorCode === 'auth/unauthorized-domain') {
             setError('This domain is not authorized in the Firebase Console. Please add your live URL to the "Authorized domains" list in Firebase Authentication settings.');
           } else {
+            console.error("Detailed Sign-Up Error:", err);
             setError(err.message || 'An error occurred during sign up. Please check the console for details.');
           }
           setLoading(false);
           return;
         }
       } else {
-        console.log("Attempting sign in with:", email);
         try {
           await signInWithEmailAndPassword(auth, email, password);
-          console.log("Sign in successful, navigating...");
           navigate(from, { replace: true });
         } catch (err: any) {
-          console.error("Detailed Sign-In Error:", err);
           const errorCode = err.code || (err.cause && (err.cause as any).code);
-          console.log("Error Code:", errorCode);
 
           if (
             errorCode === 'auth/wrong-password' || 
@@ -121,6 +113,7 @@ const Login = () => {
           } else if (errorCode === 'auth/unauthorized-domain') {
             setError('This domain is not authorized in the Firebase Console. Please add your live URL to the "Authorized domains" list in Firebase Authentication settings.');
           } else {
+            console.error("Detailed Sign-In Error:", err);
             setError(err.message || 'An error occurred during sign in. Please check the console for details.');
           }
           setLoading(false);

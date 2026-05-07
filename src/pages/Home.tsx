@@ -2,10 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, BookOpen, Award, CheckCircle2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { courses, testimonials } from '../data/courses';
+import { courses as staticCourses, testimonials } from '../data/courses';
 import { CourseCard } from '../components/Cards';
+import { useCoursePricing } from '../hooks/useCoursePricing';
 
 const Home = () => {
+  const { courses, loading: pricingLoading } = useCoursePricing();
+
   return (
     <div className="space-y-32 pb-32">
       {/* Hero Section */}

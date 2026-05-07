@@ -4,13 +4,14 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { courses } from '../data/courses';
+import { useCoursePricing } from '../hooks/useCoursePricing';
 import { BookOpen, Clock, Award, ChevronRight, PlayCircle, CreditCard, Receipt, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn, formatPrice } from '../lib/utils';
 
 const Dashboard = () => {
   const { user, userProfile, isAuthReady } = useAuth();
   const navigate = useNavigate();
+  const { courses, loading: pricingLoading } = useCoursePricing();
   const [enrolledCourses, setEnrolledCourses] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,8 @@ const Dashboard = () => {
       navigate('/login', { state: { from: '/dashboard' } });
       return;
     }
+
+    if (pricingLoading) return;
 
     const fetchData = async () => {
       if (user) {
@@ -62,7 +65,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, [user, isAuthReady, navigate]);
+  }, [user, isAuthReady, navigate, pricingLoading, courses]);
 
   if (loading) {
     return (
@@ -181,7 +184,7 @@ const Dashboard = () => {
             {enrolledCourses.length > 0 ? (
               <div className="grid gap-6">
                 {enrolledCourses.map((course) => {
-                  const isActive = course.accessStatus === 'active';
+                  const isActive = isAdmin || course.accessStatus === 'active';
                   
                   return (
                     <motion.div

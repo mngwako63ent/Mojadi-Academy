@@ -26,8 +26,8 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured, locked
           src={course.image}
           alt={course.title}
           className={cn(
-            "w-full h-full object-cover transition-transform duration-700",
-            !locked && "group-hover:scale-110"
+            "w-full h-full object-cover transition-all duration-700",
+            !locked && "group-hover:scale-110 group-hover:brightness-110"
           )}
           referrerPolicy="no-referrer"
         />

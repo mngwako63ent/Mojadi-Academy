@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { collection, query, getDocs, doc, updateDoc, setDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { collection, query, getDocs, getDoc, doc, updateDoc, setDoc, serverTimestamp, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../components/AuthContext';
-import { Check, X, FileText, User, BookOpen, CreditCard, Search, Loader2, AlertCircle } from 'lucide-react';
+import { Check, X, FileText, User, BookOpen, CreditCard, Search, Loader2, AlertCircle, Tag, DollarSign } from 'lucide-react';
 import { cn, formatPrice } from '../lib/utils';
 import { courses } from '../data/courses';
 
@@ -15,6 +15,13 @@ const AdminPayments = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [selectedReceipt, setSelectedReceipt] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'payments' | 'users' | 'courses'>('payments');
+  const [users, setUsers] = useState<any[]>([]);
+  const [dynamicPrices, setDynamicPrices] = useState<Record<string, { price: number, isFree: boolean }>>({});
+  const [savingPriceId, setSavingPriceId] = useState<string | null>(null);
+  const [pendingPaidCourseId, setPendingPaidCourseId] = useState<string | null>(null);
+  const [newPriceInput, setNewPriceInput] = useState<string>('');
 
   useEffect(() => {
     if (!authLoading && (!userProfile || userProfile.role !== 'admin')) {
@@ -48,31 +55,71 @@ const AdminPayments = () => {
     }
   }, [userProfile]);
 
-  const [selectedReceipt, setSelectedReceipt] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'payments' | 'users'>('payments');
-  const [users, setUsers] = useState<any[]>([]);
+  // Fetch dynamic prices
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, 'course_overrides'), (snapshot) => {
+      const newPrices: Record<string, { price: number, isFree: boolean }> = {};
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        newPrices[doc.id] = {
+          price: data.price,
+          isFree: data.price === 0
+        };
+      });
+      setDynamicPrices(newPrices);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleUpdatePrice = async (courseId: string, updates: any) => {
+    setSavingPriceId(courseId);
+    try {
+      const course = courses.find(c => c.id === courseId);
+      if (!course) return;
+
+      const currentOverride = dynamicPrices[courseId] || { price: course.price, isFree: course.price === 0 };
+      
+      let newPrice: number;
+      
+      if (updates.isFree === true) {
+        newPrice = 0;
+      } else if (updates.price !== undefined) {
+        newPrice = Number(updates.price);
+      } else {
+        // Switching to paid or keeping paid status
+        newPrice = updates.isFree === false ? (Number(newPriceInput) || course.price) : currentOverride.price;
+      }
+      
+      const docRef = doc(db, 'course_overrides', courseId);
+      await setDoc(docRef, {
+        price: newPrice,
+        updatedAt: serverTimestamp()
+      });
+      
+      setPendingPaidCourseId(null);
+      setNewPriceInput('');
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `course_overrides/${courseId}`);
+    } finally {
+      setSavingPriceId(null);
+    }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      if (activeTab === 'users' && userProfile?.role === 'admin') {
-        setLoading(true);
-        try {
-          const q = query(collection(db, 'users'));
-          const querySnapshot = await getDocs(q);
-          const userData = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-          setUsers(userData);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    fetchUsers();
-  }, [activeTab, userProfile]);
+    if (userProfile?.role === 'admin') {
+      const q = query(collection(db, 'users'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const userData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setUsers(userData);
+      }, (error) => {
+        console.error("Error listening to users:", error);
+      });
+      return () => unsubscribe();
+    }
+  }, [userProfile]);
 
   const handleApprove = async (payment: any) => {
     setProcessingId(payment.id);
@@ -134,7 +181,8 @@ const AdminPayments = () => {
   const filteredUsers = users.filter(u => 
     u.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.id?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const [manualEnrollmentUser, setManualEnrollmentUser] = useState<any>(null);
@@ -421,12 +469,21 @@ const AdminPayments = () => {
         >
           Student Directory
         </button>
+        <button 
+          onClick={() => setActiveTab('courses')}
+          className={cn(
+            "px-6 py-2 rounded-full font-bold transition-all",
+            activeTab === 'courses' ? "bg-secondary text-white" : "bg-black/5 dark:bg-white/5 hover:bg-black/10"
+          )}
+        >
+          Manage Courses
+        </button>
       </div>
 
       {activeTab === 'payments' ? (
         payments.length === 0 ? (
           <div className="glass p-20 text-center rounded-[3rem] space-y-4">
-            <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <Check size={40} />
             </div>
             <h2 className="text-2xl font-bold">All clear!</h2>
@@ -522,7 +579,7 @@ const AdminPayments = () => {
             </div>
           </div>
         )
-      ) : (
+      ) : activeTab === 'users' ? (
         <div className="glass rounded-[2rem] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -627,6 +684,110 @@ const AdminPayments = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses.map((course) => {
+            const dynamic = dynamicPrices[course.id] || { price: course.price, isFree: course.price === 0 };
+            
+            return (
+              <div key={course.id} className="glass p-6 rounded-[2rem] space-y-4 border-black/5 dark:border-white/5 hover:border-secondary/20 transition-all">
+                <div className="flex gap-4">
+                  <img src={course.image} className="w-20 h-20 rounded-2xl object-cover" alt={course.title} />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-sm leading-tight line-clamp-2">{course.title}</h3>
+                    <p className="text-xs text-primary/40 mt-1">{course.category}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={cn(
+                        "px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-full",
+                        dynamic.isFree ? "bg-green-500/10 text-green-600" : "bg-secondary/10 text-secondary"
+                      )}>
+                        {dynamic.isFree ? 'Free' : 'Paid'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 space-y-4 border-t border-black/5 dark:border-white/5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-widest text-primary/40">Status</label>
+                    <div className="flex items-center gap-2">
+                      {pendingPaidCourseId === course.id ? (
+                        <div className="flex items-center gap-2">
+                          <input 
+                            type="number"
+                            placeholder="Price (R)"
+                            value={newPriceInput}
+                            onChange={(e) => setNewPriceInput(e.target.value)}
+                            className="w-24 px-3 py-1 text-xs bg-black/5 dark:bg-white/5 border border-secondary/20 rounded-lg outline-none focus:ring-1 ring-secondary"
+                            autoFocus
+                          />
+                          <button 
+                            onClick={() => handleUpdatePrice(course.id, { isFree: false })}
+                            disabled={savingPriceId === course.id}
+                            className="p-1 px-2 bg-secondary text-white text-[10px] font-bold rounded-lg hover:bg-secondary/80 transition-all disabled:opacity-50"
+                          >
+                            {savingPriceId === course.id ? '...' : 'Confirm'}
+                          </button>
+                          <button 
+                            onClick={() => { setPendingPaidCourseId(null); setNewPriceInput(''); }}
+                            className="p-1 px-2 bg-black/5 dark:bg-white/5 text-[10px] font-bold rounded-lg hover:bg-black/10 transition-all border border-black/5 dark:border-white/10"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={() => {
+                            if (dynamic.isFree) {
+                              setPendingPaidCourseId(course.id);
+                              setNewPriceInput(course.price.toString());
+                            } else {
+                              handleUpdatePrice(course.id, { isFree: true });
+                            }
+                          }}
+                          disabled={savingPriceId === course.id}
+                          className={cn(
+                            "text-[10px] font-bold px-3 py-1 rounded-lg transition-all",
+                            savingPriceId === course.id ? "opacity-50 cursor-not-allowed" : "",
+                            dynamic.isFree 
+                              ? "bg-green-500 text-white shadow-lg shadow-green-500/20 hover:bg-green-600" 
+                              : "bg-primary/5 text-primary dark:text-white hover:bg-primary/10"
+                          )}
+                        >
+                          {savingPriceId === course.id ? 'Updating...' : dynamic.isFree ? 'Switch to Paid' : 'Switch to Free'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {!dynamic.isFree && pendingPaidCourseId !== course.id && (
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-widest text-primary/40">Custom Price (R)</label>
+                      <div className="flex gap-2">
+                        <input 
+                          type="number" 
+                          key={dynamic.price}
+                          defaultValue={dynamic.price}
+                          onBlur={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (!isNaN(val) && val !== dynamic.price && val >= 0) {
+                              handleUpdatePrice(course.id, { price: val });
+                            }
+                          }}
+                          className="flex-grow px-4 py-2 bg-black/5 dark:bg-white/5 rounded-xl text-sm font-bold outline-none focus:ring-2 ring-secondary/20"
+                        />
+                        <div className="w-10 h-10 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center shrink-0">
+                          <CreditCard size={18} />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-primary/40">Base Price: {formatPrice(course.price)}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

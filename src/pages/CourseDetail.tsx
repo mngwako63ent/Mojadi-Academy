@@ -7,11 +7,15 @@ import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { cn, formatPrice } from '../lib/utils';
+import { useCoursePricing } from '../hooks/useCoursePricing';
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, userProfile } = useAuth();
+  const email = user?.email?.toLowerCase();
+  const isAdmin = userProfile?.role === 'admin' || (email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com');
+  const { courses, loading: pricingLoading } = useCoursePricing();
   const course = courses.find((c) => c.id === id);
   const courseIndex = courses.findIndex(c => c.id === id);
   
@@ -24,6 +28,19 @@ const CourseDetail = () => {
   React.useEffect(() => {
     const checkStatus = async () => {
       if (user && id) {
+        if (isAdmin) {
+          setIsLocked(false);
+          // Check if enrolled, but don't strictly require it for the UI to show access
+          const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', id);
+          const enrollmentSnap = await getDoc(enrollmentRef);
+          if (enrollmentSnap.exists()) {
+            setIsEnrolled(true);
+            setCompletedModules(enrollmentSnap.data().completedModules || []);
+          }
+          setLoading(false);
+          return;
+        }
+
         // Check current enrollment
         const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', id);
         const enrollmentSnap = await getDoc(enrollmentRef);
@@ -57,7 +74,7 @@ const CourseDetail = () => {
       setLoading(false);
     };
     checkStatus();
-  }, [user, id, courseIndex]);
+  }, [user, id, courseIndex, courses, isAdmin]);
 
   const handleEnroll = async () => {
     if (!user || !userProfile) {
@@ -69,10 +86,11 @@ const CourseDetail = () => {
 
     if (course) {
       try {
-        if (course.price === 0) {
-          // Free course: direct enrollment
+        if (course.price === 0 || isAdmin) {
+          // Free course or Admin: direct enrollment
           await setDoc(doc(db, 'users', user.uid, 'enrollments', course.id), {
             courseId: course.id,
+            courseTitle: course.title,
             enrolledAt: serverTimestamp(),
             progress: 0,
             completedModules: [],
@@ -100,6 +118,10 @@ const CourseDetail = () => {
     }
   };
 
+  if (pricingLoading) {
+    return <div className="pt-32 pb-32 text-center">Loading course...</div>;
+  }
+
   if (!course) {
     return (
       <div className="pt-32 pb-32 text-center">
@@ -112,16 +134,16 @@ const CourseDetail = () => {
   }
 
   if (loading) {
-    return <div className="pt-32 pb-32 text-center">Loading course...</div>;
+    return <div className="pt-32 pb-32 text-center">Checking enrollment...</div>;
   }
 
   return (
     <div className="pt-32 pb-32 max-w-5xl mx-auto px-6">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary transition-colors mb-8">
+      <button onClick={() => navigate('/courses')} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary transition-colors mb-8">
         <ArrowLeft size={20} /> Back to Courses
       </button>
 
-      {isLocked && (
+      {isLocked && !isAdmin && (
         <div className="mb-8 p-6 bg-red-500/10 border border-red-500/20 rounded-3xl flex items-center gap-4 text-red-600">
           <Lock size={24} />
           <div>
@@ -131,7 +153,7 @@ const CourseDetail = () => {
         </div>
       )}
 
-      <div className={cn("space-y-8", isLocked && "opacity-60 pointer-events-none grayscale")}>
+      <div className={cn("space-y-8", (isLocked && !isAdmin) && "opacity-60 pointer-events-none grayscale")}>
         {/* Header */}
         <div className="space-y-4">
           <div className="flex gap-2">
@@ -152,14 +174,36 @@ const CourseDetail = () => {
           </div>
         </div>
 
-        {/* Image */}
-        <div className="relative rounded-[2rem] overflow-hidden">
-          <img src={course.image} alt={course.title} className="w-full h-96 object-cover" referrerPolicy="no-referrer" />
-          {isLocked && (
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-              <Lock size={48} className="text-white" />
+        {/* Video Placeholder (Brief Section 6) */}
+        <div className="relative group cursor-pointer">
+          <div className="aspect-video w-full rounded-[2.5rem] bg-neutral-100 dark:bg-neutral-800 border-4 border-dashed border-neutral-300 dark:border-neutral-700 flex flex-col items-center justify-center gap-6 overflow-hidden relative shadow-inner">
+            {/* Background Image with blur/overlay */}
+            <img 
+              src={course.image} 
+              alt={course.title} 
+              className="absolute inset-0 w-full h-full object-cover opacity-20 blur-[2px] scale-105 group-hover:scale-110 transition-transform duration-700" 
+              referrerPolicy="no-referrer" 
+            />
+            
+            <div className="relative z-10 flex flex-col items-center gap-4 text-center px-6">
+              <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-white shadow-[0_0_40px_rgba(202,138,4,0.4)] group-hover:scale-110 transition-all duration-300">
+                <Video size={40} fill="currentColor" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-2xl font-display font-bold text-primary dark:text-white uppercase tracking-tighter">Video content coming soon</h3>
+                <p className="text-sm text-primary/40 dark:text-white/40 font-medium">Wait for official production release for full demonstrations.</p>
+              </div>
             </div>
-          )}
+
+            {isLocked && !isAdmin && (
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center z-20">
+                <div className="flex flex-col items-center gap-2 text-white">
+                  <Lock size={48} />
+                  <span className="font-bold uppercase tracking-widest text-xs">Course Locked</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Main Content Grid */}
@@ -220,7 +264,7 @@ const CourseDetail = () => {
               const isCompleted = completedModules.includes(module.id);
               const isFirstModule = index === 0;
               const isPrevCompleted = index > 0 && completedModules.includes(course.modules[index - 1].id);
-              const isLocked = !isFirstModule && !isPrevCompleted && !isCompleted;
+              const isLocked = !isAdmin && !isFirstModule && !isPrevCompleted && !isCompleted;
               const isCurrent = (isFirstModule || isPrevCompleted) && !isCompleted;
 
               return (
@@ -247,7 +291,7 @@ const CourseDetail = () => {
                       <p className="text-sm text-primary/60 dark:text-sage">{module.duration}</p>
                     </div>
                   </div>
-                  {isEnrolled && (
+                  { (isEnrolled || isAdmin) && (
                     <div className="flex items-center gap-4">
                       {isLocked ? (
                         <span className="text-xs font-bold text-primary/40 italic">Locked</span>

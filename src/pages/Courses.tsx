@@ -1,15 +1,19 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, LayoutGrid, List } from 'lucide-react';
-import { courses } from '../data/courses';
+import { courses as staticCourses } from '../data/courses';
 import { CourseCard } from '../components/Cards';
 import { cn } from '../lib/utils';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
+import { useCoursePricing } from '../hooks/useCoursePricing';
 
 const Courses = () => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
+  const email = user?.email?.toLowerCase();
+  const isAdmin = userProfile?.role === 'admin' || (email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com');
+  const { courses, loading: pricingLoading } = useCoursePricing();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
@@ -17,7 +21,7 @@ const Courses = () => {
   const [enrollments, setEnrollments] = useState<Record<string, any>>({});
   const [loadingEnrollments, setLoadingEnrollments] = useState(true);
 
-  const categories = ['All', ...new Set(courses.map(c => c.category))];
+  const categories = useMemo(() => ['All', ...new Set(courses.map(c => c.category))], [courses]);
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
 
   useEffect(() => {
@@ -56,13 +60,13 @@ const Courses = () => {
       }
 
       status[course.id] = {
-        locked: isLocked,
+        locked: isAdmin ? false : isLocked,
         completed: isCompleted
       };
     });
     
     return status;
-  }, [enrollments]);
+  }, [enrollments, courses, isAdmin]);
 
   const filteredCourses = useMemo(() => {
     return courses.filter(course => {
@@ -72,7 +76,7 @@ const Courses = () => {
       const matchesLevel = level === 'All' || course.level === level;
       return matchesSearch && matchesCategory && matchesLevel;
     });
-  }, [search, category, level]);
+  }, [search, category, level, courses]);
 
   return (
     <div className="pt-32 pb-32 space-y-12 max-w-7xl mx-auto px-6">

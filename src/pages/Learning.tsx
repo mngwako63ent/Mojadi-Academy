@@ -5,7 +5,7 @@ import { courses } from '../data/courses';
 import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, HelpCircle, Award, BookOpen, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, HelpCircle, Award, BookOpen, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, Lock, Video } from 'lucide-react';
 import { cn } from '../lib/utils';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -13,7 +13,9 @@ import remarkGfm from 'remark-gfm';
 const Learning = () => {
   const { courseId, moduleId } = useParams<{ courseId: string; moduleId: string }>();
   const navigate = useNavigate();
-  const { user, isAuthReady } = useAuth();
+  const { user, userProfile, isAuthReady } = useAuth();
+  const email = user?.email?.toLowerCase();
+  const isAdmin = userProfile?.role === 'admin' || (email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com');
   
   const course = courses.find(c => c.id === courseId);
   const moduleIndex = course?.modules.findIndex(m => m.id === moduleId) ?? -1;
@@ -48,6 +50,7 @@ const Learning = () => {
   const [lockType, setLockType] = useState<'module' | 'course' | 'payment'>('module');
 
   const isModuleLocked = (mid: string) => {
+    if (isAdmin) return false;
     if (!course) return false;
     const idx = course.modules.findIndex(m => m.id === mid);
     if (idx <= 0) return false;
@@ -66,6 +69,18 @@ const Learning = () => {
         }
 
         if (courseId && course) {
+          if (isAdmin) {
+            setIsLocked(false);
+            setLoading(false);
+            // Fetch enrollment if exists, but don't block if not
+            const enrollmentRef = doc(db, 'users', user.uid, 'enrollments', courseId);
+            const enrollmentSnap = await getDoc(enrollmentRef);
+            if (enrollmentSnap.exists()) {
+              setCompletedModules(enrollmentSnap.data().completedModules || []);
+            }
+            return;
+          }
+
           // Check Course Lock (Prerequisite)
           const courseIndex = courses.findIndex(c => c.id === courseId);
           if (courseIndex > 0) {
@@ -322,6 +337,19 @@ const Learning = () => {
                       <p className="text-xl text-primary/70 dark:text-sage leading-relaxed whitespace-pre-wrap">
                         {module.introduction}
                       </p>
+                    </div>
+
+                    {/* Video Placeholder (Brief Section 6) */}
+                    <div className="relative group cursor-pointer">
+                      <div className="aspect-video w-full rounded-2xl bg-neutral-100 dark:bg-neutral-800 border-2 border-dashed border-neutral-300 dark:border-neutral-700 flex flex-col items-center justify-center gap-4 overflow-hidden relative">
+                        <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center text-white group-hover:scale-110 transition-all duration-300">
+                          <Video size={24} fill="currentColor" />
+                        </div>
+                        <div className="text-center">
+                          <h4 className="text-lg font-bold text-primary dark:text-white uppercase tracking-tighter">Video demonstration coming soon</h4>
+                          <p className="text-[10px] text-primary/40 dark:text-white/40 font-medium">Recorded at Mojadi Production Facilities</p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="space-y-6">

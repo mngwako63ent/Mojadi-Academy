@@ -52,7 +52,7 @@ export interface Course {
   title: string;
   description: string;
   category: string;
-  level: 'Beginner' | 'Intermediate' | 'Advanced';
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Specialised';
   duration: string;
   price: number;
   image: string;
@@ -891,6 +891,291 @@ Pests: 1. Cutworm, 2. Fall Armyworm, 3. Flowering weeds (seed set multiplication
         `
       }
     ]
+  },
+  {
+    id: 'soil-land-prep',
+    title: 'Understanding Soil and Land Preparation',
+    description: 'Learn the fundamental properties of soil, assess quality, and master techniques for land preparation.',
+    category: 'Crop Production',
+    level: 'Beginner',
+    duration: '2 Weeks',
+    price: 0,
+    image: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800',
+    rating: 4.7,
+    students: 180,
+    learningObjectives: [
+      'Understand soil types and characteristics (Sandy, Clay, Loam, Silt)',
+      'Manage soil pH, acidity, and alkalinity',
+      'Identify nutrients crops need to thrive',
+      'Master manual and mechanised tillage methods',
+      'Apply soil conservation basics to prevent erosion'
+    ],
+    modules: [
+      {
+        id: 'soil-m1',
+        title: 'Module 1: Soil Characteristics',
+        description: 'Introduction to soil science and types.',
+        introduction: 'Understanding soil is the first step...',
+        duration: '2 Hours',
+        learningObjectives: ['Identify soil types'],
+        quiz: [],
+        topics: [
+          { id: 'soil-t1', title: 'Soil Types (Sandy, clay, loam, silt)', order: 1, content: 'Soil is categorized by particle size...', duration: '30 min' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'seeds-planting-spacing',
+    title: 'Seeds, Planting, and Spacing',
+    description: 'Master seed selection, germination principles, and optimal planting configurations for maximum yield.',
+    category: 'Crop Production',
+    level: 'Beginner',
+    duration: '2 Weeks',
+    price: 0,
+    image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=800',
+    rating: 4.9,
+    students: 156,
+    learningObjectives: [
+      'Identify types of seeds (Open-pollinated, hybrid, certified)',
+      'Apply seed selection criteria for quality and sourcing',
+      'Understand germination conditions (Temp, moisture, light)',
+      'Compare direct seeding vs transplanting',
+      'Optimize plant spacing and row configuration'
+    ],
+    modules: [
+      {
+        id: 'seeds-m1',
+        title: 'Module 1: Seed Technology',
+        description: 'Fundamentals of seeds.',
+        introduction: 'Choosing the right seed is critical...',
+        duration: '2 Hours',
+        learningObjectives: ['Understand seed types'],
+        quiz: [],
+        topics: [
+          { id: 'seeds-t1', title: 'Types of Seeds', order: 1, content: 'Understanding seed genetics...', duration: '45 min' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'water-irrigation-basic',
+    title: 'Water Management and Basic Irrigation',
+    description: 'Learn how crops use water, identify stress signs, and explore irrigation methods for small-scale farming.',
+    category: 'Crop Production',
+    level: 'Beginner',
+    duration: '2 Weeks',
+    price: 0,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777894647/Water_Management_and_Irrigation_202605041326_i3ynus.jpg',
+    rating: 4.6,
+    students: 210,
+    learningObjectives: [
+      'Understand transpiration and moisture requirements',
+      'Identify signs of under- and over-watering',
+      'Plan around natural rainfall and seasonal patterns',
+      'Distinguish between flood, drip, and sprinkler systems',
+      'Apply water conservation techniques like mulching'
+    ],
+    modules: [
+      {
+        id: 'water-m1',
+        title: 'Module 1: Water Usage',
+        description: 'How crops use water.',
+        introduction: 'Water is the lifeblood...',
+        duration: '2 Hours',
+        learningObjectives: ['Identify water stress'],
+        quiz: [],
+        topics: [
+          { id: 'water-t1', title: 'How Plants Use Water', order: 1, content: 'Water transport in plants...', duration: '30 min' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pests-diseases-weeds-intro',
+    title: 'Introduction to Crop Pests, Diseases, and Weeds',
+    description: 'Foundational overview of common threats to crop production and practical management strategies.',
+    category: 'Crop Production',
+    level: 'Beginner',
+    duration: '2 Weeks',
+    price: 0,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777895409/Introduction_to_Crop_Pests_Diseases_and_Weeds_xm5klp.jpg',
+    rating: 4.5,
+    students: 195,
+    learningObjectives: [
+      'Identify insects, rodents, and other common pests',
+      'Explain fungal, bacterial, and viral infections',
+      'Understand weed competition and impact',
+      'Apply Integrated Pest Management (IPM) principles',
+      'Safely handle pesticides and herbicides'
+    ],
+    modules: [
+      {
+        id: 'pests-m1',
+        title: 'Module 1: Identification',
+        description: 'Identifying common threats.',
+        introduction: 'Protection is key...',
+        duration: '2 Hours',
+        learningObjectives: ['Identify pests'],
+        quiz: [],
+        topics: [
+          { id: 'pests-t1', title: 'Common Crop Pests', order: 1, content: 'Identifying local pests...', duration: '40 min' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'advanced-soil-fertility',
+    title: 'Advanced Soil Fertility and Fertilisation',
+    description: 'Scientifically assess and improve soil fertility through testing, nutrient management, and application strategies.',
+    category: 'Crop Production',
+    level: 'Intermediate',
+    duration: '3 Weeks',
+    price: 1500,
+    image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?w=800',
+    rating: 4.8,
+    students: 92,
+    learningObjectives: [
+      'Interpret soil analysis reports correctly',
+      'Understand macro and micronutrients roles',
+      'Apply organic fertilisers (compost, manure, biostimulants)',
+      'Calculate inorganic fertiliser application rates',
+      'Design season-long nutrient plans'
+    ],
+    modules: [
+      {
+        id: 'advsoil-m1',
+        title: 'Module 1: Soil Testing',
+        description: 'Advanced assessment.',
+        introduction: 'Reading the soil...',
+        duration: '3 Hours',
+        learningObjectives: ['Interpret reports'],
+        quiz: [],
+        topics: [
+          { id: 'advsoil-t1', title: 'Reading Lab Reports', order: 1, content: 'Analyzing NPK levels...', duration: '60 min' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'variety-selection-seed-tech',
+    title: 'Crop Variety Selection and Seed Technology',
+    description: 'Critically evaluate and select the best crop varieties for specific climates, soils, and market demands.',
+    category: 'Crop Production',
+    level: 'Intermediate',
+    duration: '3 Weeks',
+    price: 1400,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777895660/Crop_Variety_Selection_and_Seed_Technology_tkir6k.jpg',
+    rating: 4.7,
+    students: 75,
+    learningObjectives: [
+      'Compare heirlooms, hybrids, and commercial cultivars',
+      'Match crop varieties to specific climate and soil',
+      'Balance yield potential vs input requirements',
+      'Understand modern seed tech (treated, pelleted, GM)',
+      'Source quality seeds from certified suppliers'
+    ],
+    modules: []
+  },
+  {
+    id: 'irrigation-design-mgmt',
+    title: 'Irrigation Systems Design and Management',
+    description: 'Design, install, and manage professional drip and sprinkler systems for commercial production.',
+    category: 'Crop Production',
+    level: 'Intermediate',
+    duration: '3 Weeks',
+    price: 1800,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777897011/Irrigation_Systems_Design_Manage__202605041405_kra2ja.jpg',
+    rating: 4.9,
+    students: 88,
+    learningObjectives: [
+      'Calculate crop water requirements by growth stage',
+      'Design drip and sprinkler layouts from scratch',
+      'Manage water sources (boreholes, dams, municipal)',
+      'Automate irrigation with moisture indicators',
+      'Perform system maintenance and troubleshooting'
+    ],
+    modules: []
+  },
+  {
+    id: 'ipm-intermediate',
+    title: 'Integrated Pest and Disease Management',
+    description: 'Master commercial-level pest and disease management using balanced biological and chemical strategies.',
+    category: 'Crop Production',
+    level: 'Intermediate',
+    duration: '3 Weeks',
+    price: 1600,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777897237/Integrated_Pest_Disease_Management_202605041419_d0p7w8.jpg',
+    rating: 4.8,
+    students: 110,
+    learningObjectives: [
+      'Set up formal scouting and monitoring programmes',
+      'Utilise biological control and natural predators',
+      'Calibrate sprayers and manage application timing',
+      'Prevent pesticide resistance through rotation',
+      'Maintain records for audit and compliance'
+    ],
+    modules: []
+  },
+  {
+    id: 'harvest-postharvest-marketing',
+    title: 'Crop Harvesting, Post-Harvest Handling, and Marketing',
+    description: 'Learn to minimize losses after harvest and bring crops to market profitably.',
+    category: 'Crop Production',
+    level: 'Intermediate',
+    duration: '3 Weeks',
+    price: 1300,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777897507/Crop_Harvesting_Post-Harvest_Han__202605041424_owhond.jpg',
+    rating: 4.7,
+    students: 134,
+    learningObjectives: [
+      'Identify harvest timing and maturity indicators',
+      'Compare manual vs mechanised harvesting',
+      'Implement post-harvest loss prevention strategies',
+      'Meet buyer standards for grading and packaging',
+      'Understand local markets, co-ops, and value chains'
+    ],
+    modules: []
+  },
+  {
+    id: 'onion-production',
+    title: 'Onion Production',
+    description: 'Comprehensive guide to growing onions commercially, from seed management to storage.',
+    category: 'Vegetable Production',
+    level: 'Specialised',
+    duration: '4 Weeks',
+    price: 2100,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777897630/Onion_Production_black_characters_202605041426_fnutvg.jpg',
+    rating: 4.8,
+    students: 65,
+    learningObjectives: [
+      'Plan around short-day vs long-day varieties',
+      'Master direct seeding vs transplanting for onions',
+      'Manage sulphur and potassium for bulb development',
+      'Implement irrigation to avoid bulb rot',
+      'Perform curing and storage for extended shelf life'
+    ],
+    modules: []
+  },
+  {
+    id: 'beetroot-production',
+    title: 'Beetroot Production',
+    description: 'Master every stage of beetroot production for fresh markets and processing.',
+    category: 'Vegetable Production',
+    level: 'Specialised',
+    duration: '4 Weeks',
+    price: 1950,
+    image: 'https://res.cloudinary.com/dm7sxhaeb/image/upload/v1777897923/Beetroot_production_using_charac__202605041431_z3zbjf.jpg',
+    rating: 4.6,
+    students: 58,
+    learningObjectives: [
+      'Differentiate table beets vs processing varieties',
+      'Master seed spacing, thinning, and stand establishment',
+      'Manage boron and potassium for root development',
+      'Control leaf spot, aphids, and soil-borne pathogens',
+      'Apply size standards for grading and washing'
+    ],
+    modules: []
   },
   {
     id: 'intermediate-crop-production',

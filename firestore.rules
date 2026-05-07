@@ -40,13 +40,17 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow create: if isOwner(userId) && (
         incoming().role == 'student' || 
+        incoming().role == 'user' || 
         (incoming().role == 'admin' && isAdminEmail())
       ) && (
         incoming().studentId.matches('^STU-[0-9]{4}-[0-9]{6}$') ||
         incoming().studentId.matches('^ADMIN-[0-9]{4}$')
       );
 
-      allow update: if isAdminEmail() || isAdmin() || (isOwner(userId) && !incoming().diff(existing()).affectedKeys().hasAny(['role', 'studentId', 'createdAt']));
+      allow update: if isAdminEmail() || isAdmin() || (isOwner(userId) && (
+        !incoming().diff(existing()).affectedKeys().hasAny(['role', 'createdAt']) &&
+        (!incoming().diff(existing()).affectedKeys().hasAny(['studentId']) || !('studentId' in existing()))
+      ));
       
       // Enrollments subcollection
       match /enrollments/{courseId} {
@@ -54,6 +58,18 @@ service cloud.firestore {
         allow create: if isAdmin() || (isOwner(userId) && (!incoming().keys().hasAny(['accessStatus']) || incoming().accessStatus == 'locked'));
         allow update: if isAdmin() || (isOwner(userId) && !incoming().diff(existing()).affectedKeys().hasAny(['accessStatus']));
       }
+    }
+
+    // Course Overrides
+    match /course_overrides/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // App Settings
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // Orders

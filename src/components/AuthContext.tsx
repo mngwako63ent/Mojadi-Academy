@@ -23,74 +23,83 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentUser);
       
       if (currentUser) {
-        // Fetch or create user profile in Firestore
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        const email = currentUser.email?.toLowerCase();
-        const isAdminEmail = email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com';
-        
-        try {
-          const userDoc = await getDoc(userDocRef);
+        // Use a function for the core logic so we can retry it
+        const syncProfile = async () => {
+          const userDocRef = doc(db, 'users', currentUser.uid);
+          const email = currentUser.email?.toLowerCase();
+          const isAdminEmail = email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com';
           
-          if (userDoc.exists()) {
-            const data = userDoc.data();
+          try {
+            const userDoc = await getDoc(userDocRef);
             
-            let updatedData = { ...data };
-            let needsUpdate = false;
+            if (userDoc.exists()) {
+              const data = userDoc.data();
+              
+              let updatedData = { ...data };
+              let needsUpdate = false;
 
-            if (isAdminEmail && data.role !== 'admin') {
-              updatedData.role = 'admin';
-              needsUpdate = true;
-            }
-
-            // Backfill missing or old format ID
-            const isOldAdminId = data.studentId && data.studentId.startsWith('ADM-');
-            if (!data.studentId || (updatedData.role === 'admin' && (isOldAdminId || !data.studentId.startsWith('ADMIN-')))) {
-              const randomPart = Math.floor(1000 + Math.random() * 9000);
-              if (updatedData.role === 'admin') {
-                updatedData.studentId = `ADMIN-${randomPart}`;
-              } else {
-                const year = new Date().getFullYear();
-                const stuRandom = Math.floor(100000 + Math.random() * 900000);
-                updatedData.studentId = `STU-${year}-${stuRandom}`;
+              if (isAdminEmail && data.role !== 'admin') {
+                updatedData.role = 'admin';
+                needsUpdate = true;
               }
-              needsUpdate = true;
+
+              // Backfill missing or old format ID
+              const isOldAdminId = data.studentId && data.studentId.startsWith('ADM-');
+              if (!data.studentId || (updatedData.role === 'admin' && (isOldAdminId || !data.studentId.startsWith('ADMIN-')))) {
+                const randomPart = Math.floor(1000 + Math.random() * 9000);
+                if (updatedData.role === 'admin') {
+                  updatedData.studentId = `ADMIN-${randomPart}`;
+                } else {
+                  const year = new Date().getFullYear();
+                  const stuRandom = Math.floor(100000 + Math.random() * 900000);
+                  updatedData.studentId = `STU-${year}-${stuRandom}`;
+                }
+                needsUpdate = true;
+              }
+
+              if (needsUpdate) {
+                await setDoc(userDocRef, updatedData, { merge: true });
+              }
+
+              setUserProfile(updatedData);
+
+              // Set online
+              await updateDoc(userDocRef, {
+                isOnline: true,
+                lastSeen: serverTimestamp()
+              });
+
+            } else {
+              const year = new Date().getFullYear();
+              const randomPart = isAdminEmail ? Math.floor(1000 + Math.random() * 9000) : Math.floor(100000 + Math.random() * 900000);
+              const studentId = isAdminEmail ? `ADMIN-${randomPart}` : `STU-${year}-${randomPart}`;
+              
+              // Create new user profile
+              const newProfile = {
+                uid: currentUser.uid,
+                email: currentUser.email,
+                displayName: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                studentId,
+                role: isAdminEmail ? 'admin' : 'user',
+                isOnline: true,
+                lastSeen: serverTimestamp(),
+                createdAt: serverTimestamp(),
+              };
+              await setDoc(userDocRef, newProfile);
+              setUserProfile(newProfile);
             }
-
-            if (needsUpdate) {
-              await setDoc(userDocRef, updatedData, { merge: true });
-            }
-
-            setUserProfile(updatedData);
-
-            // Set online
-            await updateDoc(userDocRef, {
-              isOnline: true,
-              lastSeen: serverTimestamp()
-            });
-
-          } else {
-            const year = new Date().getFullYear();
-            const randomPart = isAdminEmail ? Math.floor(1000 + Math.random() * 9000) : Math.floor(100000 + Math.random() * 900000);
-            const studentId = isAdminEmail ? `ADMIN-${randomPart}` : `STU-${year}-${randomPart}`;
-            
-            // Create new user profile
-            const newProfile = {
-              uid: currentUser.uid,
-              email: currentUser.email,
-              displayName: currentUser.displayName,
-              photoURL: currentUser.photoURL,
-              studentId,
-              role: isAdminEmail ? 'admin' : 'user',
-              isOnline: true,
-              lastSeen: serverTimestamp(),
-              createdAt: serverTimestamp(),
-            };
-            await setDoc(userDocRef, newProfile);
-            setUserProfile(newProfile);
+          } catch (error) {
+            console.error("Error fetching/creating user profile:", error);
+            // If it's a permission error or similar, we'll keep loading as false but userProfile will be null
+            // The components should handle null userProfile gracefully
+          } finally {
+            setLoading(false);
+            setIsAuthReady(true);
           }
-        } catch (error) {
-          console.error("Error fetching/creating user profile:", error);
-        }
+        };
+
+        syncProfile();
       } else {
         // If logging out, try to set offline
         if (user) {
@@ -101,14 +110,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }).catch(() => {});
         }
         setUserProfile(null);
+        setLoading(false);
+        setIsAuthReady(true);
       }
-      
-      setLoading(false);
-      setIsAuthReady(true);
     });
 
     return () => unsubscribe();
-  }, [user]); // Add user to dependency array to handle the logout logic correctly
+  }, [user]);
+
+  // Recovery Logic: If user is present but profile is still missing after 5 seconds, retry once
+  useEffect(() => {
+    if (user && !userProfile && isAuthReady && !loading) {
+      const timer = setTimeout(async () => {
+        if (!userProfile) { // Check again after timeout
+          console.log("Retrying profile sync...");
+          const userDocRef = doc(db, 'users', user.uid);
+          try {
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+              setUserProfile(userDoc.data());
+            } else {
+              // Try to create it again - maybe permissions were fixed
+              const email = user.email?.toLowerCase();
+              const isAdminEmail = email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com';
+              const year = new Date().getFullYear();
+              const randomPart = isAdminEmail ? Math.floor(1000 + Math.random() * 9000) : Math.floor(100000 + Math.random() * 900000);
+              const studentId = isAdminEmail ? `ADMIN-${randomPart}` : `STU-${year}-${randomPart}`;
+              
+              const newProfile = {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                studentId,
+                role: isAdminEmail ? 'admin' : 'user',
+                isOnline: true,
+                lastSeen: serverTimestamp(),
+                createdAt: serverTimestamp(),
+              };
+              await setDoc(userDocRef, newProfile);
+              setUserProfile(newProfile);
+            }
+          } catch (e) {
+            console.error("Recovery sync failed:", e);
+          }
+        }
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [user, userProfile, isAuthReady, loading]);
 
   // Presence Heartbeat
   useEffect(() => {
