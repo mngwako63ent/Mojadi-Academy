@@ -8,65 +8,19 @@ import { useAuth } from '../components/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { useCoursePricing } from '../hooks/useCoursePricing';
+import { useCourseLockStatus } from '../hooks/useCourseLockStatus';
 
 const Courses = () => {
   const { user, userProfile } = useAuth();
-  const email = user?.email?.toLowerCase();
-  const isAdmin = userProfile?.role === 'admin' || (email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com');
   const { courses, loading: pricingLoading } = useCoursePricing();
+  const { courseStatus, loading: lockLoading } = useCourseLockStatus(courses);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [level, setLevel] = useState('All');
   const [view, setView] = useState<'grid' | 'list'>('grid');
-  const [enrollments, setEnrollments] = useState<Record<string, any>>({});
-  const [loadingEnrollments, setLoadingEnrollments] = useState(true);
 
-  const categories = useMemo(() => ['All', ...new Set(courses.map(c => c.category))], [courses]);
+  const categories = useMemo(() => ['All', ...new Set((courses || []).map(c => c.category))], [courses]);
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
-
-  useEffect(() => {
-    const fetchEnrollments = async () => {
-      if (user) {
-        try {
-          const q = query(collection(db, 'users', user.uid, 'enrollments'));
-          const querySnapshot = await getDocs(q);
-          const enrollmentData: Record<string, any> = {};
-          querySnapshot.forEach((doc) => {
-            enrollmentData[doc.id] = doc.data();
-          });
-          setEnrollments(enrollmentData);
-        } catch (error) {
-          console.error("Error fetching enrollments:", error);
-        }
-      }
-      setLoadingEnrollments(false);
-    };
-    fetchEnrollments();
-  }, [user]);
-
-  const courseStatus = useMemo(() => {
-    const status: Record<string, { locked: boolean; completed: boolean }> = {};
-    
-    courses.forEach((course, index) => {
-      const enrollment = enrollments[course.id];
-      const isCompleted = enrollment?.completedModules?.length === course.modules.length;
-      
-      let isLocked = false;
-      if (index > 0) {
-        const prevCourse = courses[index - 1];
-        const prevEnrollment = enrollments[prevCourse.id];
-        const prevCompleted = prevEnrollment?.completedModules?.length === prevCourse.modules.length;
-        isLocked = !prevCompleted;
-      }
-
-      status[course.id] = {
-        locked: isAdmin ? false : isLocked,
-        completed: isCompleted
-      };
-    });
-    
-    return status;
-  }, [enrollments, courses, isAdmin]);
 
   const filteredCourses = useMemo(() => {
     return courses.filter(course => {
@@ -79,16 +33,16 @@ const Courses = () => {
   }, [search, category, level, courses]);
 
   return (
-    <div className="pt-32 pb-32 space-y-12 max-w-7xl mx-auto px-6">
-      <div className="space-y-4">
-        <h1 className="text-5xl font-display font-bold tracking-tight">Explore Our Courses</h1>
-        <p className="text-primary/60 dark:text-sage max-w-2xl">
+    <div className="pt-24 pb-32 space-y-8 md:space-y-12 w-full max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="space-y-3 md:space-y-4">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-tight tracking-tight">Explore Our Courses</h1>
+        <p className="text-base sm:text-lg text-primary/60 dark:text-sage max-w-2xl leading-relaxed">
           From foundational knowledge to advanced commercial techniques, find the perfect course to elevate your farming expertise.
         </p>
       </div>
 
       {/* Filters Bar */}
-      <div className="glass p-4 rounded-3xl flex flex-col md:row items-center gap-6">
+      <div className="glass p-4 sm:p-5 rounded-2xl sm:rounded-3xl flex flex-col md:flex-row items-center gap-4 sm:gap-6 shadow-lg border-secondary/5">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40 dark:text-sage" size={20} />
           <input

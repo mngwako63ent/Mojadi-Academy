@@ -59,7 +59,7 @@ const Contact = () => {
   const faqs = [
     { question: 'How do I enroll in a course?', answer: 'Simply browse our courses, select the one you\'re interested in, and click "Enroll Now". We\'ll contact you with payment details and access information.' },
     { question: 'Are the courses available online?', answer: 'Yes! All our courses are delivered online, allowing you to learn at your own pace from anywhere. You can access course materials 24/7.' },
-    { question: 'Do I get a certificate after completion?', answer: 'Yes, you\'ll receive a certificate of completion for each course you finish. This certificate demonstrates your commitment to continuous learning and professional development.' },
+    { question: 'Do I get a certificate after completion?', answer: 'Yes, you\'ll receive a Certificate of Participation for each course you finish. This certificate demonstrates your commitment to continuous learning and professional development.' },
     { question: 'What payment methods do you accept?', answer: 'We accept various payment methods including bank transfers and mobile payments. Contact us after enrollment to discuss payment options that work best for you.' },
   ];
 
@@ -80,7 +80,7 @@ const Contact = () => {
             {[
               { icon: Phone, title: 'Phone', content: '086 123 4571' },
               { icon: Mail, title: 'Email', content: 'mojadiacademy@gmail.com' },
-              { icon: MapPin, title: 'Location', content: 'South Africa' },
+              { icon: MapPin, title: 'Location', content: 'Rustenburg, North West, South Africa' },
               { icon: Clock, title: 'Business Hours', content: 'Mon - Fri 08:00 AM - 5:00 PM' },
             ].map((item) => (
               <div key={item.title} className="flex gap-6 items-center glass p-6 rounded-2xl">

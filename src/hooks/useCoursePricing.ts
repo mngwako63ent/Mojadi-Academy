@@ -5,35 +5,55 @@ import { courses as staticCourses, Course } from '../data/courses';
 
 export const useCoursePricing = () => {
   const [courses, setCourses] = useState<Course[]>(staticCourses);
-  const [overrides, setOverrides] = useState<Record<string, { price: number }>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'course_overrides'), (snapshot) => {
-      const newOverrides: Record<string, { price: number }> = {};
-      snapshot.docs.forEach(doc => {
-        newOverrides[doc.id] = doc.data() as { price: number };
-      });
-      setOverrides(newOverrides);
+    // Listen to the main courses collection
+    const unsubCourses = onSnapshot(collection(db, 'courses'), (snapshot) => {
+      const dbCourses = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      })) as Course[];
 
-      const mergedCourses = staticCourses.map(course => {
-        if (newOverrides[course.id]) {
-          return {
-            ...course,
-            price: newOverrides[course.id].price
-          };
+      // Filter for published courses only for public view
+      // Note: We might want a different hook for admin or filtered views, 
+      // but for now, we merge and prefer Firestore data if ID matches
+      
+      const merged = [...staticCourses];
+      
+      dbCourses.forEach(dbCourse => {
+        const index = merged.findIndex(c => c.id === dbCourse.id);
+        if (index > -1) {
+          // Update existing static course with firestore data
+          merged[index] = { ...merged[index], ...dbCourse };
+        } else if (dbCourse.status === 'published') {
+          // Add new published course from firestore
+          merged.push(dbCourse);
         }
-        return course;
       });
-      setCourses(mergedCourses);
+
+      // Also handle the case where a static course might be "shadowed" by a draft in Firestore
+      // If a course exists in Firestore but status is 'draft', we should probably hide it if it's supposed to be managed
+      const finalCourses = merged.filter(course => {
+        const dbEntry = dbCourses.find(dc => dc.id === course.id);
+        if (dbEntry) {
+          return dbEntry.status === 'published';
+        }
+        // If not in DB, it's a static course that hasn't been "imported" to CMS yet, allow it?
+        // Or should we only show what's in Firestore?
+        // Let's allow static for now to not break initial app state
+        return true;
+      });
+
+      setCourses(finalCourses);
       setLoading(false);
     }, (error) => {
-      console.error("Error fetching course pricing overrides:", error);
+      console.error("Error fetching courses from Firestore:", error);
       setLoading(false);
     });
 
-    return () => unsub();
+    return () => unsubCourses();
   }, []);
 
-  return { courses, overrides, loading };
+  return { courses, loading };
 };

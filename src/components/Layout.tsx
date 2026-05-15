@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Sun, Moon, ChevronRight, Leaf, LogOut, User, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useTheme } from 'next-themes';
@@ -37,7 +37,7 @@ export const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Courses', path: '/courses' },
     { name: 'Dashboard', path: '/dashboard', auth: true },
-    { name: 'Admin Panel', path: '/admin/payments', admin: true },
+    { name: 'Admin Panel', path: '/admin', admin: true },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
@@ -71,7 +71,7 @@ export const Navbar = () => {
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8">
           {filteredLinks.map((link) => (
             <Link
               key={link.name}
@@ -99,7 +99,7 @@ export const Navbar = () => {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 px-3 py-1.5 glass rounded-full">
                   {user.photoURL ? (
-                    <img src={user.photoURL} alt={user.displayName || ''} className="w-6 h-6 rounded-full" />
+                    <img src={user.photoURL || undefined} alt={user.displayName || ''} className="w-6 h-6 rounded-full" />
                   ) : (
                     <User size={16} className="text-primary/60 dark:text-sage" />
                   )}
@@ -127,7 +127,7 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile Toggle */}
-        <div className="md:hidden flex items-center gap-4">
+        <div className="lg:hidden flex items-center gap-4">
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10"
@@ -150,7 +150,7 @@ export const Navbar = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 right-0 glass border-t border-white/10 md:hidden p-6 flex flex-col gap-4"
+            className="absolute top-full left-0 right-0 glass border-t border-white/10 lg:hidden p-6 flex flex-col gap-4"
           >
             {filteredLinks.map((link) => (
               <Link
@@ -252,7 +252,7 @@ export const Footer = () => {
               </div>
               <div className="pt-1">
                 <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-0.5">Location</p>
-                <span className="text-sm font-medium group-hover:text-white transition-colors">Pretoria, South Africa</span>
+                <span className="text-sm font-medium group-hover:text-white transition-colors">Rustenburg, North West, South Africa</span>
               </div>
             </li>
             <li className="flex items-start gap-4 group">

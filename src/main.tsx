@@ -4,6 +4,7 @@ import App from './App.tsx';
 import './index.css';
 import { ThemeProvider } from './components/theme-provider.tsx';
 import { AuthProvider } from './components/AuthContext.tsx';
+import { FeedbackProvider } from './components/FeedbackContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -14,7 +15,9 @@ createRoot(document.getElementById('root')!).render(
       disableTransitionOnChange
     >
       <AuthProvider>
-        <App />
+        <FeedbackProvider>
+          <App />
+        </FeedbackProvider>
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,

@@ -8,6 +8,7 @@ interface AuthContextType {
   userProfile: any | null;
   loading: boolean;
   isAuthReady: boolean;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -197,8 +198,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [user]);
 
+  const handleSignOut = async () => {
+    try {
+      if (user) {
+        const userDocRef = doc(db, 'users', user.uid);
+        await updateDoc(userDocRef, { isOnline: false, lastSeen: serverTimestamp() });
+      }
+      await auth.signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, userProfile, loading, isAuthReady }}>
+    <AuthContext.Provider value={{ user, userProfile, loading, isAuthReady, signOut: handleSignOut }}>
       {children}
     </AuthContext.Provider>
   );

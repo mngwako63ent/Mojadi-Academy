@@ -5,9 +5,20 @@ import { Link } from 'react-router-dom';
 import { courses as staticCourses, testimonials } from '../data/courses';
 import { CourseCard } from '../components/Cards';
 import { useCoursePricing } from '../hooks/useCoursePricing';
+import { useCourseLockStatus } from '../hooks/useCourseLockStatus';
 
 const Home = () => {
   const { courses, loading: pricingLoading } = useCoursePricing();
+  const { courseStatus, loading: lockLoading } = useCourseLockStatus(courses);
+
+  if (pricingLoading || lockLoading) {
+    return (
+      <div className="pt-32 flex flex-col items-center justify-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-secondary"></div>
+        <p className="text-primary/60">Loading courses...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-32 pb-32">
@@ -70,9 +81,9 @@ const Home = () => {
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
                     <CheckCircle2 size={24} />
                   </div>
-                  <span className="font-bold text-primary dark:text-sage">Certified</span>
+                  <span className="font-bold text-primary dark:text-sage">Certificate</span>
                 </div>
-                <p className="text-xs text-primary/60 dark:text-sage">Professional agricultural certification upon completion.</p>
+                <p className="text-xs text-primary/60 dark:text-sage">Certificate of Participation upon completion.</p>
               </div>
             </div>
           </motion.div>
@@ -93,43 +104,12 @@ const Home = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <CourseCard 
+              key={course.id} 
+              course={course} 
+              locked={courseStatus[course.id]?.locked}
+            />
           ))}
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="bg-primary py-32 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center space-y-4 mb-20">
-            <span className="text-secondary font-bold uppercase tracking-widest text-sm">Success Stories</span>
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-white">Trusted by Farmers</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, i) => (
-              <motion.div
-                key={t.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl relative"
-              >
-                <div className="text-secondary mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={16} fill="currentColor" className="inline mr-1" />)}
-                </div>
-                <p className="text-white/80 italic mb-8 leading-relaxed">"{t.content}"</p>
-                <div className="flex items-center gap-4">
-                  <img src={t.avatar} alt={t.name} className="w-12 h-12 rounded-full object-cover" referrerPolicy="no-referrer" />
-                  <div>
-                    <h4 className="text-white font-bold">{t.name}</h4>
-                    <p className="text-white/80 text-xs">{t.role}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
     </div>

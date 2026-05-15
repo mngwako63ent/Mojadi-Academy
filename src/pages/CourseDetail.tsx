@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Star, Clock, BarChart, CheckCircle2, Users, BookOpen, Video, Award, MessageSquare, Lock } from 'lucide-react';
 import { courses } from '../data/courses';
 import { useAuth } from '../components/AuthContext';
@@ -66,7 +66,7 @@ const CourseDetail = () => {
           const prevRef = doc(db, 'users', user.uid, 'enrollments', prevCourse.id);
           const prevSnap = await getDoc(prevRef);
           
-          if (!prevSnap.exists() || (prevSnap.data().completedModules?.length || 0) < prevCourse.modules.length) {
+          if (!prevSnap.exists() || (prevSnap.data().completedModules?.length || 0) < (prevCourse.modules?.length || 0)) {
             setIsLocked(true);
           }
         }
@@ -133,13 +133,25 @@ const CourseDetail = () => {
     );
   }
 
+  if (!course) {
+    return (
+      <div className="pt-32 pb-32 text-center space-y-4">
+        <h2 className="text-2xl font-bold">Course Not Found</h2>
+        <p>The course you are looking for does not exist or has been removed.</p>
+        <button onClick={() => navigate('/courses')} className="px-6 py-2 bg-secondary text-white rounded-full font-bold">
+          Back to Courses
+        </button>
+      </div>
+    );
+  }
+
   if (loading) {
     return <div className="pt-32 pb-32 text-center">Checking enrollment...</div>;
   }
 
   return (
-    <div className="pt-32 pb-32 max-w-5xl mx-auto px-6">
-      <button onClick={() => navigate('/courses')} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary transition-colors mb-8">
+    <div className="pt-24 pb-16 md:pt-32 md:pb-32 w-full max-w-7xl mx-auto px-4 sm:px-6">
+      <button onClick={() => navigate('/courses')} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary transition-colors mb-6 md:mb-8 text-sm md:text-base">
         <ArrowLeft size={20} /> Back to Courses
       </button>
 
@@ -164,13 +176,13 @@ const CourseDetail = () => {
               {course.level}
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold">{course.title}</h1>
-          <p className="text-lg text-primary/70 dark:text-sage max-w-2xl">{course.description}</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-tight">{course.title}</h1>
+          <p className="text-base md:text-lg text-primary/70 dark:text-sage max-w-2xl leading-relaxed">{course.description}</p>
           
-            <div className="flex items-center gap-6 text-sm text-primary/60 dark:text-sage pt-2">
-            <div className="flex items-center gap-2"><Star size={20} className="text-yellow-500" /> {course.rating} Rating</div>
-            <div className="flex items-center gap-2"><Users size={20} className="text-secondary" /> {course.students} Students</div>
-            <div className="flex items-center gap-2"><Clock size={20} className="text-secondary" /> {course.duration}</div>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-primary/60 dark:text-sage pt-2">
+            <div className="flex items-center gap-2"><Star size={18} className="text-yellow-500" /> {course.rating} Rating</div>
+            <div className="flex items-center gap-2"><Users size={18} className="text-secondary" /> {course.students} Students</div>
+            <div className="flex items-center gap-2"><Clock size={18} className="text-secondary" /> {course.duration}</div>
           </div>
         </div>
 
@@ -179,7 +191,7 @@ const CourseDetail = () => {
           <div className="aspect-video w-full rounded-[2.5rem] bg-neutral-100 dark:bg-neutral-800 border-4 border-dashed border-neutral-300 dark:border-neutral-700 flex flex-col items-center justify-center gap-6 overflow-hidden relative shadow-inner">
             {/* Background Image with blur/overlay */}
             <img 
-              src={course.image} 
+              src={course.image || course.thumbnail || undefined} 
               alt={course.title} 
               className="absolute inset-0 w-full h-full object-cover opacity-20 blur-[2px] scale-105 group-hover:scale-110 transition-transform duration-700" 
               referrerPolicy="no-referrer" 
@@ -208,20 +220,28 @@ const CourseDetail = () => {
 
         {/* Main Content Grid */}
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-8">
-            <div className="glass p-8 rounded-[2rem]">
-              <h3 className="text-2xl font-bold mb-6">What You'll Learn</h3>
-              <ul className="space-y-4">
-                {[
-                  "Comprehensive understanding of " + course.title.toLowerCase(),
-                  "Practical techniques you can apply immediately on your farm",
-                  "Best practices used by successful commercial farmers",
-                  "How to maximize yield and profitability",
-                  "Sustainable and environmentally friendly farming methods"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-primary/80 dark:text-sage">
-                    <CheckCircle2 size={20} className="text-secondary shrink-0 mt-0.5" />
-                    {item}
+          <div className="md:col-span-2 space-y-6 md:space-y-8">
+            <div className="glass p-5 sm:p-8 rounded-2xl sm:rounded-[2rem]">
+              <h3 className="text-xl md:text-2xl font-bold mb-6">What You'll Learn</h3>
+              <ul className="space-y-3 sm:space-y-4">
+                {(course.learningObjectives && course.learningObjectives.length > 0
+                  ? course.learningObjectives
+                  : [
+                      "Comprehensive understanding of " + course.title.toLowerCase(),
+                      "Practical techniques you can apply immediately on your farm",
+                      "Best practices used by successful commercial farmers",
+                      "How to maximize yield and profitability",
+                      "Sustainable and environmentally friendly farming methods"
+                    ]
+                ).map((item: string, i: number) => (
+                  <li key={i} className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-secondary/5 dark:bg-white/5 rounded-xl sm:rounded-2xl border border-secondary/10 hover:border-secondary/20 transition-all group">
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-secondary/10 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-secondary/20 transition-colors">
+                      <CheckCircle2 size={14} className="text-secondary" />
+                    </div>
+                    <div 
+                      className="prose prose-sm prose-slate max-w-none dark:prose-invert text-primary/80 dark:text-sage font-medium leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: item }}
+                    />
                   </li>
                 ))}
               </ul>
@@ -229,29 +249,45 @@ const CourseDetail = () => {
           </div>
 
           {/* Enrollment Card */}
-          <div className="glass p-8 rounded-[2rem] h-fit sticky top-32">
-            <h2 className="text-4xl font-bold mb-6">
-              {course.price === 0 ? 'Free' : formatPrice(course.price)}
-            </h2>
-            <button 
-              onClick={
-                isEnrolled 
-                  ? () => navigate(`/learning/${course.id}/${course.modules[0].id}`) 
-                  : existingOrder 
-                  ? () => navigate(`/payment/${existingOrder.id}`)
-                  : handleEnroll
-              }
-              className="w-full btn-premium bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent dark:hover:bg-sage-bright text-lg py-4 mb-6 rounded-full"
-            >
-              {isEnrolled ? 'Continue Learning' : existingOrder ? 'Finish Payment' : 'Enroll Now'}
-            </button>
-            <div className="space-y-4 text-sm text-primary/70 dark:text-sage">
-              <p className="font-bold text-primary dark:text-sage">This course includes:</p>
-              <div className="flex items-center gap-3"><BookOpen size={18} /> {course.modules.length} Modules</div>
-              <div className="flex items-center gap-3"><Video size={18} /> Video Lessons</div>
-              <div className="flex items-center gap-3"><Clock size={18} /> {course.duration} Duration</div>
-              <div className="flex items-center gap-3"><Award size={18} /> Certificate of Completion</div>
-              <div className="flex items-center gap-3"><MessageSquare size={18} /> Community Access</div>
+          <div className="lg:relative">
+            <div className="glass p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] lg:sticky lg:top-32 shadow-xl border-secondary/10">
+              <div className="flex flex-row md:flex-col justify-between items-center md:items-start mb-6 gap-4">
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  {course.price === 0 ? 'Free' : formatPrice(course.price)}
+                </h2>
+                {isEnrolled && (
+                  <span className="px-3 py-1 bg-green-500/10 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+                    Enrolled
+                  </span>
+                )}
+              </div>
+              <button 
+                onClick={
+                  isEnrolled 
+                    ? () => {
+                        const firstModuleId = course.modules?.[0]?.id;
+                        if (firstModuleId) {
+                          navigate(`/learning/${course.id}/${firstModuleId}`);
+                        } else {
+                          navigate(`/learning/${course.id}`);
+                        }
+                      }
+                    : existingOrder 
+                    ? () => navigate(`/payment/${existingOrder.id}`)
+                    : handleEnroll
+                }
+                className="w-full btn-premium bg-primary dark:bg-sage text-white dark:text-neutral-dark hover:bg-accent dark:hover:bg-sage-bright text-base md:text-lg py-3 md:py-4 mb-6 rounded-full shadow-lg shadow-primary/20"
+              >
+                {isEnrolled ? 'Continue Learning' : existingOrder ? 'Finish Payment' : 'Enroll Now'}
+              </button>
+              <div className="space-y-3 sm:space-y-4 text-sm text-primary/70 dark:text-sage">
+                <p className="font-bold text-primary dark:text-sage border-b border-black/5 pb-2">This course includes:</p>
+                <div className="flex items-center gap-3"><BookOpen size={16} className="text-secondary" /> {course.modules?.length || 0} Modules</div>
+                <div className="flex items-center gap-3"><Video size={16} className="text-secondary" /> Video Lessons</div>
+                <div className="flex items-center gap-3"><Clock size={16} className="text-secondary" /> {course.duration} Duration</div>
+                <div className="flex items-center gap-3"><Award size={16} className="text-secondary" /> Certificate of Completion</div>
+                <div className="flex items-center gap-3"><MessageSquare size={16} className="text-secondary" /> Community Access</div>
+              </div>
             </div>
           </div>
         </div>
@@ -260,10 +296,10 @@ const CourseDetail = () => {
         <div className="glass p-8 rounded-[2rem]">
           <h3 className="text-2xl font-bold mb-6">Course Curriculum</h3>
           <div className="space-y-4">
-            {course.modules.map((module, index) => {
+            {course.modules?.map((module, index) => {
               const isCompleted = completedModules.includes(module.id);
               const isFirstModule = index === 0;
-              const isPrevCompleted = index > 0 && completedModules.includes(course.modules[index - 1].id);
+              const isPrevCompleted = index > 0 && course.modules && completedModules.includes(course.modules[index - 1]?.id || '');
               const isLocked = !isAdmin && !isFirstModule && !isPrevCompleted && !isCompleted;
               const isCurrent = (isFirstModule || isPrevCompleted) && !isCompleted;
 
@@ -280,7 +316,7 @@ const CourseDetail = () => {
                       "w-10 h-10 rounded-full flex items-center justify-center font-bold",
                       isCompleted ? "bg-green-500/20 text-green-500" : "bg-primary/10 text-primary dark:text-sage"
                     )}>
-                      {isCompleted ? <CheckCircle2 size={20} /> : index + 6}
+                      {isCompleted ? <CheckCircle2 size={20} /> : index + 1}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -289,6 +325,19 @@ const CourseDetail = () => {
                         {isCurrent && <span className="text-[10px] font-black uppercase tracking-widest text-secondary px-2 py-0.5 bg-secondary/10 rounded-full">In Progress</span>}
                       </div>
                       <p className="text-sm text-primary/60 dark:text-sage">{module.duration}</p>
+                      {module.learningObjectives && module.learningObjectives.length > 0 && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-secondary">Module Objectives:</p>
+                          <ul className="space-y-2">
+                            {module.learningObjectives.map((obj: string, i: number) => (
+                              <li key={i} className="flex items-start gap-2 text-xs text-primary/70 dark:text-sage">
+                                <CheckCircle2 size={12} className="text-secondary shrink-0 mt-0.5" />
+                                <span>{obj}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </div>
                   { (isEnrolled || isAdmin) && (

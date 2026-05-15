@@ -41,6 +41,7 @@ export interface Module {
   introduction: string;
   duration: string;
   topics: Topic[];
+  lessons?: Topic[];
   learningObjectives: string[];
   quiz: QuizQuestion[];
   assessment?: Assessment;
@@ -56,10 +57,12 @@ export interface Course {
   duration: string;
   price: number;
   image: string;
+  thumbnail?: string;
   modules: Module[];
   learningObjectives: string[];
   rating: number;
   students: number;
+  status?: 'draft' | 'published';
 }
 
 export const courses: Course[] = [
@@ -202,7 +205,7 @@ Farmers operate at different scales and with different goals. Understanding the 
 | Feature | Subsistence Farming | Commercial Farming |
 | :--- | :--- | :--- |
 | **Goal** | Feed the family | Produce for market sale |
-| **Scale** | Small plot (< 1 ha) | Medium to large scale |
+| **Scale** | Small plot (&lt; 1 ha) | Medium to large scale |
 | **Technology** | Mostly manual tools | Machinery and equipment |
 | **Income** | Little or no cash income | Primary income source |
 | **Risk** | Lower investment risk | Higher financial risk |
@@ -576,9 +579,16 @@ Healthy soil is alive, containing billions of organisms like bacteria, fungi, an
             order: 3,
             duration: '1 hour',
             content: `
-pH measures acidity or alkalinity (0-14). Most crops prefer 5.5 to 7.0.
-- **Acidity (<5.5)**: can release toxic aluminium; locks away nutrients. Fix with **agricultural lime**.
-- **Alkalinity (>7.5)**: can also lock away nutrients. Fix with **sulphur or compost**.
+pH is a measure of soil acidity or alkalinity, on a scale from 0 (extremely acid) to 14 (extremely alkaline), with 7 being neutral. Most crops grow best in a pH range of 5.5 to 7.0.
+
+**Why pH matters:**
+- pH affects how available nutrients are to plants — even if nutrients are present, the wrong pH locks them away
+- pH affects soil biology — beneficial bacteria thrive near neutral pH
+- Highly acidic soils (pH < 5.5) can release toxic levels of aluminium and manganese
+
+**Adjusting soil pH:**
+- To raise pH (reduce acidity): apply agricultural lime (calcium carbonate)
+- To lower pH (increase acidity): apply elemental sulphur or compost
             `
           },
           {
@@ -613,6 +623,8 @@ Key indicators of fertile soil:
 - **Harrowing/Raking**: breaks clods and levels the surface.
 - **Ridging**: raised rows for crops like potatoes; improves drainage.
 - **Bed preparation**: standard 1-1.2m widths for easy access in horticulture.
+ 
+> **Key Principle**: Over-tilling damages soil structure by destroying aggregates and killing soil organisms. Till only as much as needed — what is called minimum or conservation tillage — and incorporate organic matter to restore what tillage disrupts.
             `
           }
         ],
@@ -729,6 +741,7 @@ Seed quality determines germination rates and plant vigour.
 | **Maize** | 75–90 cm | 25–30 cm | 5–7 cm |
 | **Tomato** | 75 cm | 45–60 cm | Cotyledon level |
 | **Beans** | 45–60 cm | 10–15 cm | 3–5 cm |
+| **Spinach** | 30 cm | 15–20 cm | 1–2 cm |
             `
           },
           {
@@ -857,6 +870,8 @@ Scouting is systematic inspection.
 2. Inspect sample plants in all areas.
 3. Check leaf undersides.
 4. Record observations.
+ 
+> **Scout Early, Act Early**: A pest population doubles every few days under ideal conditions. Finding 5 aphids today is very different from finding 5,000 next week. Regular scouting gives you a crucial head start on any problem.
             `
           }
         ],

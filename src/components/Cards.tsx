@@ -1,9 +1,10 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { Star, Clock, BarChart, ArrowRight, Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Star, Clock, BarChart, ArrowRight, Lock, Edit3 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Course } from '../data/courses';
 import { cn, formatPrice } from '../lib/utils';
+import { useAuth } from './AuthContext';
 
 interface CourseCardProps {
   course: Course;
@@ -12,6 +13,16 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course, featured, locked }) => {
+  const { userProfile } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = userProfile?.role === 'admin';
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/admin/courses?id=${course.id}`);
+  };
+
   const content = (
     <motion.div
       whileHover={locked ? {} : { y: -10 }}
@@ -23,7 +34,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured, locked
     >
       <div className={cn("relative overflow-hidden", featured ? "md:w-1/2" : "aspect-video")}>
         <img
-          src={course.image}
+          src={course.image || course.thumbnail || undefined}
           alt={course.title}
           className={cn(
             "w-full h-full object-cover transition-all duration-700",
@@ -44,6 +55,17 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, featured, locked
             </span>
           )}
         </div>
+
+        {isAdmin && (
+          <button 
+            onClick={handleEdit}
+            className="absolute top-4 right-4 p-2 bg-white/90 dark:bg-black/80 backdrop-blur-md rounded-xl text-secondary hover:bg-secondary hover:text-white transition-all shadow-xl z-20"
+            title="Edit Course"
+          >
+            <Edit3 size={16} />
+          </button>
+        )}
+
         {locked && (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
             <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">

@@ -25,7 +25,95 @@
         "courseId": { "type": "string" },
         "accessStatus": { "type": "string", "enum": ["active", "locked"] },
         "completedModules": { "type": "array", "items": { "type": "string" } },
-        "activatedAt": { "type": "string", "format": "date-time" }
+        "assessmentResults": { "type": "object" },
+        "activatedAt": { "type": "string", "format": "date-time" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "certificateId": { "type": "string" }
+      }
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Stores course details.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "thumbnail": { "type": "string" },
+        "bannerImage": { "type": "string" },
+        "difficulty": { "type": "string" },
+        "duration": { "type": "string" },
+        "learningObjectives": { "type": "array", "items": { "type": "string" } },
+        "instructor": { "type": "object" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Module": {
+      "title": "Module",
+      "description": "Stores module details within a course.",
+      "type": "object",
+      "properties": {
+        "courseId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "order": { "type": "number" },
+        "duration": { "type": "string" },
+        "objectives": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Lesson": {
+      "title": "Lesson",
+      "description": "Stores lesson content within a module.",
+      "type": "object",
+      "properties": {
+        "moduleId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string", "enum": ["video", "pdf", "docx", "text", "image"] },
+        "content": { "type": "string" },
+        "order": { "type": "number" },
+        "resources": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "Assessment": {
+      "title": "Assessment",
+      "description": "Stores assessment/test for a module or course.",
+      "type": "object",
+      "properties": {
+        "courseId": { "type": "string" },
+        "moduleId": { "type": "string" },
+        "title": { "type": "string" },
+        "questions": { "type": "array", "items": { "type": "object" } },
+        "passingScore": { "type": "number" },
+        "memorandum": { "type": "string" }
+      }
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "description": "Stores generated certificate details.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "courseId": { "type": "string" },
+        "courseName": { "type": "string" },
+        "issuedAt": { "type": "string", "format": "date-time" },
+        "certificateId": { "type": "string" }
+      }
+    },
+    "MediaAsset": {
+      "title": "Media Asset",
+      "description": "Stores website visual assets.",
+      "type": "object",
+      "properties": {
+        "key": { "type": "string" },
+        "url": { "type": "string" },
+        "type": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       }
     },
     "Order": {
@@ -49,9 +137,16 @@
       "type": "object",
       "properties": {
         "studentId": { "type": "string" },
+        "userId": { "type": "string" },
         "orderId": { "type": "string" },
+        "courseTitle": { "type": "string" },
         "receiptFile": { "type": "string" },
-        "uploadedAt": { "type": "string", "format": "date-time" }
+        "fileName": { "type": "string" },
+        "fileType": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "uploadedAt": { "type": "string", "format": "date-time" },
+        "processedAt": { "type": "string", "format": "date-time" },
+        "processedBy": { "type": "string" }
       }
     }
   },
@@ -63,6 +158,30 @@
     "/users/{userId}/enrollments/{courseId}": {
       "schema": "Enrollment",
       "description": "User course enrollments."
+    },
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Courses."
+    },
+    "/courses/{courseId}/modules/{moduleId}": {
+      "schema": "Module",
+      "description": "Course modules."
+    },
+    "/courses/{courseId}/modules/{moduleId}/lessons/{lessonId}": {
+      "schema": "Lesson",
+      "description": "Module lessons."
+    },
+    "/assessments/{assessmentId}": {
+      "schema": "Assessment",
+      "description": "Assessments."
+    },
+    "/certificates/{certificateId}": {
+      "schema": "Certificate",
+      "description": "Issued certificates."
+    },
+    "/media_assets/{assetId}": {
+      "schema": "MediaAsset",
+      "description": "Website media assets."
     },
     "/orders/{orderId}": {
       "schema": "Order",

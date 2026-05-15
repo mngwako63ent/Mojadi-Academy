@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -98,51 +97,117 @@
   }
 }
 
+/* global settings */
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
   }
+  
   body {
     @apply bg-background text-foreground font-sans antialiased transition-colors duration-300;
+    @apply overflow-x-hidden w-full max-w-full;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Universal text wrapping safety */
+  * {
+    @apply border-border outline-ring border-spacing-0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 }
 
 @layer components {
+  .section-container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+    @apply bg-[rgba(255,255,255,0.7)] backdrop-blur-md border border-white/20 shadow-sm;
   }
   
   .dark .glass {
-    @apply bg-[#1F2937]/80 backdrop-blur-md border-white/10 shadow-lg;
+    @apply bg-[rgba(31,41,55,0.8)] backdrop-blur-md border-white/10 shadow-lg;
   }
 
   .btn-premium {
     @apply relative overflow-hidden px-6 py-3 rounded-full font-medium transition-all duration-300 active:scale-95;
   }
 
-  /* Table Styles */
-  .prose table {
-    @apply w-full border-collapse my-8 text-sm md:text-base;
+  /* Table Styles - Matching Client Reference Perfectly */
+  .prose table, 
+  .ql-editor table {
+    @apply !w-full !border-separate !border-spacing-0 !my-8 !bg-white dark:!bg-black/10 !rounded-2xl !overflow-hidden !border !border-slate-200 dark:!border-white/10 !shadow-sm;
+    display: table !important;
   }
 
-  .prose thead {
-    @apply bg-primary/5 dark:bg-white/5;
+  /* Header Row Styling */
+  .prose thead, 
+  .ql-editor thead,
+  .prose table tr:first-child, 
+  .ql-editor table tr:first-child,
+  .ql-editor .ql-table-row:first-child {
+    @apply !bg-[#F8FAFC] dark:!bg-white/5 !border-b !border-slate-200 dark:!border-white/10;
   }
 
-  .prose th {
-    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-left font-bold text-primary dark:text-sage;
+  .prose th, 
+  .ql-editor th,
+  .prose tr:first-child td,
+  .ql-editor tr:first-child td,
+  .ql-editor .ql-table-row:first-child td {
+    @apply !border-b !border-r !border-slate-200 dark:!border-white/10 !px-8 !py-5 !text-left !font-bold !text-slate-800 dark:!text-sage !text-[15px] !tracking-tight;
   }
 
-  .prose td {
-    @apply border border-black/10 dark:border-white/10 px-4 py-3 text-primary/80 dark:text-sage/80;
+  /* Body Cell Styling */
+  .prose td, 
+  .ql-editor td {
+    @apply !border-b !border-r !border-slate-200 dark:!border-white/10 !px-8 !py-5 !text-slate-600 dark:!text-sage/80 !font-medium !text-[15px];
+    vertical-align: middle !important;
   }
 
-  .prose tr:nth-child(even) {
-    @apply bg-black/[0.02] dark:bg-white/[0.02];
+  /* Remove right border on last column */
+  .prose th:last-child, .ql-editor th:last-child,
+  .prose td:last-child, .ql-editor td:last-child,
+  .prose tr td:last-child, .ql-editor tr td:last-child {
+    @apply !border-r-0;
   }
 
-  .prose tr:hover {
-    @apply bg-secondary/5 dark:bg-secondary/10 transition-colors;
+  /* Remove bottom border on last row */
+  .prose tr:last-child td, 
+  .ql-editor tr:last-child td {
+    @apply !border-b-0;
+  }
+
+  /* Bold First Column */
+  .prose tr td:first-child, 
+  .ql-editor tr td:first-child {
+    @apply !font-bold !text-slate-900 dark:!text-sage;
+  }
+
+  /* Reset First Column Bold for First Row (if it's already bold) */
+  .prose tr:first-child td:first-child,
+  .ql-editor tr:first-child td:first-child {
+    @apply !font-bold !text-slate-900;
+  }
+
+  .prose tr:hover, .ql-editor tr:hover {
+    @apply !bg-slate-50 dark:!bg-white/5 !transition-colors;
+  }
+
+  /* Quill Table Selection & Interaction Resets */
+  .ql-editor td.ql-selected {
+    @apply !bg-[rgba(12,62,47,0.1)];
+  }
+
+  /* Handle Quill-specific table wrappers if any */
+  .prose .ql-table-container {
+    @apply overflow-x-auto w-full my-8;
+  }
+  
+  .prose .ql-table-container table {
+    @apply my-0; /* Remove margin when inside container */
   }
 
   /* List and Content Readability */
@@ -171,5 +236,16 @@
   /* Responsive Table Container */
   .table-container {
     @apply overflow-x-auto w-full my-8 rounded-2xl border border-black/5 dark:border-white/5;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Image scaling */
+  img {
+    @apply max-w-full h-auto block;
+  }
+
+  /* Responsive Spacing & Padding */
+  .inner-card {
+    @apply p-4 sm:p-6 md:p-8;
   }
 }

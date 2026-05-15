@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { collection, query, getDocs, getDoc, doc, updateDoc, setDoc, serverTimestamp, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '../components/AuthContext';
@@ -8,7 +8,65 @@ import { Check, X, FileText, User, BookOpen, CreditCard, Search, Loader2, AlertC
 import { cn, formatPrice } from '../lib/utils';
 import { courses } from '../data/courses';
 
+// Internal components for better organization
+const PdfViewer = ({ data, fileName }: { data: string, fileName?: string }) => {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      // Extract base64 part
+      const base64Data = data.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      setBlobUrl(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } catch (e) {
+      console.error("Failed to create blob for PDF preview", e);
+    }
+  }, [data]);
+
+  if (!blobUrl) return (
+    <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+      <Loader2 className="animate-spin text-secondary" size={40} />
+      <p className="text-primary/60 font-medium">Preparing document preview...</p>
+    </div>
+  );
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      <iframe 
+        src={`${blobUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+        className="flex-grow w-full border-none rounded-b-none"
+        title="PDF Receipt"
+      />
+      <div className="p-4 bg-white border-t border-black/5 flex justify-between items-center shrink-0">
+        <span className="text-[10px] font-bold text-primary/40 truncate flex-1 mr-4">
+          {fileName || 'receipt.pdf'}
+        </span>
+        <a 
+          href={blobUrl} 
+          target="_blank" 
+          rel="noreferrer"
+          className="px-4 py-1.5 bg-secondary text-white text-[10px] font-bold rounded-full shadow-lg shadow-secondary/20 whitespace-nowrap"
+        >
+          Open in New Tab
+        </a>
+      </div>
+    </div>
+  );
+};
+
 const AdminPayments = () => {
+
   const { userProfile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [payments, setPayments] = useState<any[]>([]);
@@ -32,7 +90,9 @@ const AdminPayments = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const q = query(collection(db, 'payment_receipts'));
+        const q = query(
+          collection(db, 'payment_receipts')
+        );
         const querySnapshot = await getDocs(q);
         const paymentData = querySnapshot.docs.map(doc => ({
           id: doc.id,
@@ -122,6 +182,7 @@ const AdminPayments = () => {
   }, [userProfile]);
 
   const handleApprove = async (payment: any) => {
+    if (!payment) return;
     setProcessingId(payment.id);
     try {
       // 1. Update order status to 'activated'
@@ -142,41 +203,61 @@ const AdminPayments = () => {
         accessStatus: 'active'
       }, { merge: true });
 
-      // 3. Remove from pending receipts
-      await deleteDoc(doc(db, 'payment_receipts', payment.id));
+      // 3. Mark receipt as approved
+      await updateDoc(doc(db, 'payment_receipts', payment.id), {
+        status: 'approved',
+        processedAt: serverTimestamp(),
+        processedBy: userProfile?.uid
+      });
       
-      setPayments(payments.filter(p => p.id !== payment.id));
+      setPayments(payments.map(p => p.id === payment.id ? { ...p, status: 'approved' } : p));
+      setSelectedReceipt(null);
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, `approve_payment/${payment.id}`);
+      console.error("Approval error:", error);
+      handleFirestoreError(error, OperationType.WRITE, `payment_receipts/${payment.id}`);
     } finally {
       setProcessingId(null);
     }
   };
 
+  const [confirmRejectId, setConfirmRejectId] = useState<string | null>(null);
+
   const handleReject = async (payment: any) => {
-    if (!confirm("Are you sure you want to reject this payment?")) return;
-    
+    if (!payment) return;
+    setConfirmRejectId(null);
     setProcessingId(payment.id);
     try {
       // Revert order to pending
       await updateDoc(doc(db, 'orders', payment.orderId), {
         status: 'pending'
       });
-      // Remove receipt
-      await deleteDoc(doc(db, 'payment_receipts', payment.id));
-      setPayments(payments.filter(p => p.id !== payment.id));
+      // Mark receipt as rejected
+      await updateDoc(doc(db, 'payment_receipts', payment.id), {
+        status: 'rejected',
+        processedAt: serverTimestamp(),
+        processedBy: userProfile?.uid
+      });
+
+      setPayments(payments.map(p => p.id === payment.id ? { ...p, status: 'rejected' } : p));
+      setSelectedReceipt(null);
     } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, `reject_payment/${payment.id}`);
+      console.error("Rejection error:", error);
+      handleFirestoreError(error, OperationType.WRITE, `payment_receipts/${payment.id}`);
     } finally {
       setProcessingId(null);
     }
   };
 
-  const filteredPayments = payments.filter(p => 
-    p.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.courseTitle?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPayments = payments.filter(p => {
+    const matchesSearch = 
+      p.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.studentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.courseTitle?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // In "Pending Payments" tab, we usually only want to see pending ones
+    // unless we add a toggle for history. For now let's just filter for UI.
+    return matchesSearch && p.status === 'pending';
+  });
 
   const filteredUsers = users.filter(u => 
     u.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -517,11 +598,11 @@ const AdminPayments = () => {
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-4">
                             <div className="w-10 h-10 bg-secondary/10 text-secondary rounded-full flex items-center justify-center font-bold">
-                              {payment.studentName?.[0] || 'U'}
+                              {(payment.studentName || 'U')[0]}
                             </div>
                             <div>
                               <p className="font-bold whitespace-nowrap">{payment.studentName || 'Unknown User'}</p>
-                              <p className="text-xs text-secondary font-mono">{payment.studentId}</p>
+                              <p className="text-xs text-secondary font-mono">{payment.studentId || 'No ID'}</p>
                             </div>
                           </div>
                         </td>
@@ -551,6 +632,21 @@ const AdminPayments = () => {
                           <div className="flex items-center justify-end gap-3">
                             {processingId === payment.id ? (
                               <Loader2 className="animate-spin text-secondary" size={20} />
+                            ) : confirmRejectId === payment.id ? (
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => handleReject(payment)}
+                                  className="text-[10px] font-bold text-red-500 border border-red-500 px-2 py-1 rounded hover:bg-red-50"
+                                >
+                                  Confirm Reject
+                                </button>
+                                <button 
+                                  onClick={() => setConfirmRejectId(null)}
+                                  className="text-[10px] font-bold text-gray-400"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
                             ) : (
                               <>
                                 <button 
@@ -561,7 +657,7 @@ const AdminPayments = () => {
                                   <Check size={20} />
                                 </button>
                                 <button 
-                                  onClick={() => handleReject(payment)}
+                                  onClick={() => setConfirmRejectId(payment.id)}
                                   className="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20"
                                   title="Reject"
                                 >
@@ -599,7 +695,7 @@ const AdminPayments = () => {
                       <div className="flex items-center gap-3">
                         <div className="relative">
                           <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">
-                            {u.displayName?.[0] || u.email?.[0]?.toUpperCase()}
+                            {(u.displayName || u.email || 'U')[0].toUpperCase()}
                           </div>
                           <div className={cn(
                             "absolute bottom-0 right-0 w-3 h-3 border-2 border-white dark:border-neutral-dark rounded-full",
@@ -693,7 +789,7 @@ const AdminPayments = () => {
             return (
               <div key={course.id} className="glass p-6 rounded-[2rem] space-y-4 border-black/5 dark:border-white/5 hover:border-secondary/20 transition-all">
                 <div className="flex gap-4">
-                  <img src={course.image} className="w-20 h-20 rounded-2xl object-cover" alt={course.title} />
+                  <img src={course.image || course.thumbnail || undefined} className="w-20 h-20 rounded-2xl object-cover" alt={course.title} referrerPolicy="no-referrer" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-sm leading-tight line-clamp-2">{course.title}</h3>
                     <p className="text-xs text-primary/40 mt-1">{course.category}</p>
@@ -811,7 +907,7 @@ const AdminPayments = () => {
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center text-2xl font-bold">
-                    {selectedStudent.displayName?.[0] || selectedStudent.email?.[0]?.toUpperCase()}
+                    {(selectedStudent.displayName || selectedStudent.email || 'U')[0].toUpperCase()}
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold">{selectedStudent.displayName || 'No Name Set'}</h3>
@@ -875,7 +971,7 @@ const AdminPayments = () => {
                               {en.accessStatus === 'active' ? 'Paid / Active' : 'Pending Payment'}
                             </span>
                             <span className="text-primary/40">•</span>
-                            <span className="text-secondary">{en.progress || 0}% Complete ({en.completedModules?.length || 0}/{courses.find(c => c.id === en.courseId)?.modules.length || 0} Modules)</span>
+                            <span className="text-secondary">{en.progress || 0}% Complete ({en.completedModules?.length || 0}/{courses.find(c => c.id === en.courseId)?.modules?.length || 0} Modules)</span>
                           </div>
                         </div>
                         <div className="w-24 h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
@@ -1057,27 +1153,77 @@ const AdminPayments = () => {
                 </button>
               </div>
 
-              <div className="aspect-[3/4] bg-black/5 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-black/10">
-                <FileText size={64} className="text-primary/20 mb-4" />
-                <p className="font-bold text-primary/40">PDF Receipt File</p>
-                <p className="text-xs text-primary/20">{selectedReceipt.receiptFile}</p>
-                <div className="mt-8 px-6 py-3 bg-secondary text-white rounded-full font-bold flex items-center gap-2 cursor-not-allowed opacity-50">
-                   File preview not available in this environment
-                </div>
+              <div className="aspect-[3/4] bg-black/5 rounded-2xl overflow-hidden border-2 border-dashed border-black/10 relative group">
+                {typeof selectedReceipt.receiptFile === 'string' && selectedReceipt.receiptFile.startsWith('data:image/') ? (
+                  <div className="w-full h-full p-2">
+                    <img 
+                      src={selectedReceipt.receiptFile || undefined} 
+                      alt="Receipt" 
+                      className="w-full h-full object-contain rounded-xl"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                      <a 
+                        href={selectedReceipt.receiptFile} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-white text-xs font-bold hover:underline"
+                      >
+                        Open Original Image
+                      </a>
+                    </div>
+                  </div>
+                ) : typeof selectedReceipt.receiptFile === 'string' && selectedReceipt.receiptFile.startsWith('data:application/pdf') ? (
+                  <PdfViewer data={selectedReceipt.receiptFile} fileName={selectedReceipt.fileName} />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center">
+                      <FileText size={40} className="text-primary/20" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-primary">{selectedReceipt.fileName || 'Receipt File'}</h4>
+                      <p className="text-xs text-primary/40 mt-1">
+                        {selectedReceipt.receiptFile === 'receipt_uploaded_placeholder.pdf' 
+                          ? 'Example receipt (no actual data)' 
+                          : (selectedReceipt.fileType || 'Unknown file type')}
+                      </p>
+                    </div>
+                    {typeof selectedReceipt.receiptFile === 'string' && selectedReceipt.receiptFile.startsWith('data:') && (
+                      <div className="flex flex-col gap-2 w-full max-w-[200px]">
+                        <a 
+                          href={selectedReceipt.receiptFile} 
+                          download={selectedReceipt.fileName || 'receipt.pdf'}
+                          className="w-full py-2.5 bg-secondary text-white rounded-full font-bold text-sm shadow-xl shadow-secondary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                          Download Receipt
+                        </a>
+                        <a 
+                          href={selectedReceipt.receiptFile} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="text-[10px] font-bold text-primary/40 hover:text-secondary transition-colors"
+                        >
+                          Try opening in Browser
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-4">
                 <button 
-                  onClick={() => { handleApprove(selectedReceipt); setSelectedReceipt(null); }}
-                  className="flex-grow btn-premium bg-green-500 text-white font-bold py-3 rounded-full flex items-center justify-center gap-2"
+                  onClick={() => handleApprove(selectedReceipt)}
+                  disabled={processingId === selectedReceipt.id}
+                  className="flex-grow btn-premium bg-green-500 text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <Check size={20} /> Approve Payment
+                  {processingId === selectedReceipt.id ? <Loader2 className="animate-spin" size={20} /> : <><Check size={20} /> Approve Payment</>}
                 </button>
                 <button 
-                  onClick={() => { handleReject(selectedReceipt); setSelectedReceipt(null); }}
-                  className="flex-grow btn-premium bg-red-500 text-white font-bold py-3 rounded-full flex items-center justify-center gap-2"
+                  onClick={() => handleReject(selectedReceipt)}
+                  disabled={processingId === selectedReceipt.id}
+                  className="flex-grow btn-premium bg-red-500 text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <X size={20} /> Reject
+                  {processingId === selectedReceipt.id ? <Loader2 className="animate-spin" size={20} /> : <><X size={20} /> Reject</>}
                 </button>
               </div>
             </motion.div>

@@ -55,7 +55,11 @@ service cloud.firestore {
       // Enrollments subcollection
       match /enrollments/{courseId} {
         allow read: if isOwner(userId) || isAdmin();
-        allow create: if isAdmin() || (isOwner(userId) && (!incoming().keys().hasAny(['accessStatus']) || incoming().accessStatus == 'locked'));
+        allow create: if isAdmin() || (isOwner(userId) && (
+          incoming().accessStatus == 'active' || 
+          incoming().accessStatus == 'locked' || 
+          !incoming().keys().hasAny(['accessStatus'])
+        ));
         allow update: if isAdmin() || (isOwner(userId) && !incoming().diff(existing()).affectedKeys().hasAny(['accessStatus']));
       }
     }
@@ -76,14 +80,52 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow read: if (isSignedIn() && (resource.data.userId == request.auth.uid)) || isAdmin();
       allow create: if isSignedIn() && (incoming().userId == request.auth.uid) && (incoming().status == 'pending');
-      allow update: if isAdmin() || (isOwner(existing().userId) && incoming().status == 'paid' && existing().status == 'pending' && incoming().diff(existing()).affectedKeys().hasOnly(['status']));
+      allow update: if isAdmin() || (isOwner(resource.data.userId) && (
+        (incoming().status == 'paid' && existing().status == 'pending') ||
+        (incoming().status == 'pending' && existing().status == 'paid')
+      ) && incoming().diff(existing()).affectedKeys().hasOnly(['status']));
     }
 
     // Payment Receipts
     match /payment_receipts/{receiptId} {
       allow read: if (isSignedIn() && (resource.data.userId == request.auth.uid)) || isAdmin();
       allow create: if isSignedIn() && (incoming().userId == request.auth.uid);
-      allow delete: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin() || (isOwner(existing().userId) && existing().status == 'pending');
+    }
+
+    // Courses
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      match /modules/{moduleId} {
+        allow read: if true;
+        allow write: if isAdmin();
+
+        match /lessons/{lessonId} {
+          allow read: if true; 
+          allow write: if isAdmin();
+        }
+      }
+    }
+
+    // Assessments
+    match /assessments/{assessmentId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Certificates
+    match /certificates/{certificateId} {
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAdmin() || (isSignedIn() && incoming().userId == request.auth.uid);
+    }
+
+    // Media Assets
+    match /media_assets/{assetId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

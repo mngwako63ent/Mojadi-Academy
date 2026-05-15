@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { CreditCard, Landmark, Receipt, CheckCircle, ArrowLeft, Upload, Loader2 } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { doc, getDoc, collection, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
@@ -37,12 +37,30 @@ const Payment = () => {
     fetchOrder();
   }, [orderId]);
 
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
   const handleUploadReceipt = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!order || !userProfile) return;
+    if (!order || !userProfile || !file) return;
 
     setUploading(true);
     try {
+      // Read file as base64
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const base64File = await base64Promise;
+
       // Create payment receipt record
       await addDoc(collection(db, 'payment_receipts'), {
         orderId: order.id,
@@ -52,7 +70,9 @@ const Payment = () => {
         courseTitle: order.courseTitle,
         studentName: userProfile.displayName || userProfile.email,
         price: order.price,
-        receiptFile: "receipt_uploaded_placeholder.pdf", // Mock file
+        receiptFile: base64File,
+        fileName: file.name,
+        fileType: file.type,
         status: 'pending',
         uploadedAt: serverTimestamp()
       });
@@ -175,14 +195,30 @@ const Payment = () => {
                     className="hidden" 
                     id="receipt-upload"
                     accept="application/pdf,image/*"
+                    onChange={handleFileChange}
                     required
                   />
                   <label 
                     htmlFor="receipt-upload"
-                    className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-black/10 dark:border-white/10 rounded-2xl hover:border-secondary transition-all cursor-pointer group-hover:bg-black/5"
+                    className={cn(
+                      "flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-2xl transition-all cursor-pointer",
+                      file 
+                        ? "border-secondary bg-secondary/5" 
+                        : "border-black/10 dark:border-white/10 hover:border-secondary group-hover:bg-black/5"
+                    )}
                   >
-                    <Upload size={32} className="text-primary/40 group-hover:text-secondary mb-2 transition-colors" />
-                    <span className="text-sm font-medium text-primary/60">Click to select file</span>
+                    {file ? (
+                      <>
+                        <CheckCircle size={32} className="text-secondary mb-2" />
+                        <span className="text-sm font-bold text-primary">{file.name}</span>
+                        <span className="text-xs text-primary/40 mt-1">Click to change file</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={32} className="text-primary/40 group-hover:text-secondary mb-2 transition-colors" />
+                        <span className="text-sm font-medium text-primary/60">Click to select file</span>
+                      </>
+                    )}
                   </label>
                 </div>
               </div>
