@@ -9,7 +9,7 @@ const About = () => {
   return (
     <div className="flex flex-col">
       {/* Hero / Story Section with Cinematic Background */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-32 pb-20">
+      <section className="relative min-h-[600px] md:min-h-screen flex items-start md:items-center overflow-hidden pt-28 md:pt-32 pb-20">
         {/* Cinematic Background Layer */}
         <motion.div 
           style={{ y: y1 }}

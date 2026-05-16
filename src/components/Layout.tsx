@@ -191,21 +191,21 @@ export const Navbar = () => {
 
 export const Footer = () => {
   return (
-    <footer className="bg-primary text-white pt-20 pb-10 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="bg-primary text-white pt-16 pb-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
         <div className="space-y-6">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary dark:text-sage shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-500">
-              <Leaf size={28} />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-2xl flex items-center justify-center text-primary dark:text-sage shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-500">
+              <Leaf size={24} className="sm:size-[28px]" />
             </div>
-            <span className="text-2xl font-display font-bold tracking-tight dark:text-sage">
+            <span className="text-xl sm:text-2xl font-display font-bold tracking-tight dark:text-sage overflow-hidden whitespace-nowrap">
               Mojadi<span className="text-secondary">Academy</span>
             </span>
           </Link>
-          <p className="text-white/60 leading-relaxed text-sm">
+          <p className="text-white/60 leading-relaxed text-sm max-w-xs break-words">
             To provide accessible, high-quality agricultural education that empowers farmers with the knowledge and skills needed to succeed in modern farming.
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {[
               { icon: Facebook, href: '#' },
               { icon: Instagram, href: '#' },
@@ -223,9 +223,9 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div>
+        <div className="sm:pl-4">
           <h4 className="text-lg font-bold mb-6">Quick Links</h4>
-          <ul className="space-y-4 text-white/70">
+          <ul className="space-y-4 text-white/70 text-sm">
             <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
             <li><Link to="/courses" className="hover:text-white transition-colors">Courses</Link></li>
             <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
@@ -235,7 +235,7 @@ export const Footer = () => {
 
         <div>
           <h4 className="text-lg font-bold mb-6">Categories</h4>
-          <ul className="space-y-4 text-white/70">
+          <ul className="space-y-4 text-white/70 text-sm">
             <li><Link to="/courses" className="hover:text-white transition-colors">Crop Science</Link></li>
             <li><Link to="/courses" className="hover:text-white transition-colors">Sustainable Farming</Link></li>
             <li><Link to="/courses" className="hover:text-white transition-colors">Agri-Business</Link></li>
@@ -243,48 +243,48 @@ export const Footer = () => {
           </ul>
         </div>
 
-        <div>
-          <h4 className="text-lg font-bold mb-8">Contact Info</h4>
-          <ul className="space-y-5 text-white/60">
-            <li className="flex items-start gap-4 group">
+        <div className="space-y-6">
+          <h4 className="text-lg font-bold">Contact Info</h4>
+          <div className="space-y-5 text-white/60">
+            <div className="flex items-start gap-4 group">
               <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-300 flex-shrink-0">
                 <MapPin size={18} />
               </div>
-              <div className="pt-1">
+              <div className="min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-0.5">Location</p>
-                <span className="text-sm font-medium group-hover:text-white transition-colors">Rustenburg, North West, South Africa</span>
+                <span className="text-sm font-medium group-hover:text-white transition-colors break-words">Rustenburg, North West, South Africa</span>
               </div>
-            </li>
-            <li className="flex items-start gap-4 group">
+            </div>
+            <div className="flex items-start gap-4 group">
               <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-300 flex-shrink-0">
                 <Phone size={18} />
               </div>
-              <div className="pt-1">
+              <div className="min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-0.5">Phone</p>
-                <div className="flex flex-col">
+                <div className="flex flex-col min-w-0">
                   <span className="text-sm font-medium group-hover:text-white transition-colors">086 123 4571</span>
-                  <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors">Query: 084 520 2073</span>
+                  <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors break-all">Query: 084 520 2073</span>
                 </div>
               </div>
-            </li>
-            <li className="flex items-start gap-4 group">
+            </div>
+            <div className="flex items-start gap-4 group">
               <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-secondary group-hover:bg-secondary group-hover:text-white transition-all duration-300 flex-shrink-0">
                 <Mail size={18} />
               </div>
-              <div className="pt-1">
+              <div className="min-w-0">
                 <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-0.5">Email</p>
-                <span className="text-sm font-medium group-hover:text-white transition-colors">mojadiacademy@gmail.com</span>
+                <span className="text-sm font-medium group-hover:text-white transition-colors break-all">mojadiacademy@gmail.com</span>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       </div>
       
-      <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/10 flex flex-col md:row justify-between items-center gap-4 text-sm text-white/70">
-        <p>© 2026 Mojadi Academy. All rights reserved.</p>
-        <div className="flex gap-8">
-          <a href="#" className="hover:text-white">Privacy Policy</a>
-          <a href="#" className="hover:text-white">Terms of Service</a>
+      <div className="max-w-7xl mx-auto mt-16 md:mt-20 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-white/70">
+        <p className="text-center md:text-left">© 2026 Mojadi Academy. All rights reserved.</p>
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
+          <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
         </div>
       </div>
     </footer>

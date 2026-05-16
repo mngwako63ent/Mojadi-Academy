@@ -23,7 +23,7 @@ const Home = () => {
   return (
     <div className="space-y-32 pb-32">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <section className="relative min-h-[600px] md:min-h-screen flex items-start md:items-center pt-28 md:pt-32 lg:pt-20 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40 z-10" />
           <img
@@ -34,22 +34,22 @@ const Home = () => {
           />
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 relative z-20 grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-6 relative z-20 grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-white space-y-8"
+            className="text-white space-y-6 md:space-y-8 md:pr-4 lg:pr-12"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-medium">
               <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
               Empowering the Next Generation of Farmers
             </div>
-            <h1 className="text-6xl md:text-8xl font-display font-bold leading-[0.9] tracking-tight">
+            <h1 className="text-4xl sm:text-6xl md:text-5xl lg:text-7xl xl:text-8xl font-display font-bold leading-[0.9] tracking-tight text-balance">
               Grow Your <br />
               <span className="text-secondary">Farming</span> Success
             </h1>
-            <p className="text-xl text-white/80 max-w-lg leading-relaxed">
+            <p className="text-base sm:text-lg lg:text-xl text-white/80 max-w-lg leading-relaxed">
               Access world-class agricultural education from Mojadi Academy. Master sustainable practices, crop science, and agri-business management.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
@@ -61,12 +61,12 @@ const Home = () => {
               </Link>
             </div>
           </motion.div>
-
+ 
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="hidden md:block relative"
+            className="hidden md:block relative px-4"
           >
             <div className="absolute -inset-4 bg-secondary/20 blur-3xl rounded-full" />
             <div className="relative glass p-4 rounded-[2.5rem] border-white/30">
@@ -102,7 +102,7 @@ const Home = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {courses.map((course) => (
             <CourseCard 
               key={course.id} 

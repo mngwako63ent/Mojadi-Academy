@@ -178,7 +178,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="pt-32 flex justify-center">
+    <div className="pt-20 md:pt-24 lg:pt-32 flex justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
@@ -188,14 +188,14 @@ const Dashboard = () => {
   const isAdmin = userProfile?.role === 'admin' || (email === 'm.ngwako63@gmail.com' || email === 'admin@mojadiacademy.com');
 
   return (
-    <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto space-y-12">
-      <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+    <div className="pt-20 md:pt-24 lg:pt-32 pb-20 px-6 max-w-7xl mx-auto space-y-12">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2 md:space-y-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-tight">Welcome back, {user?.displayName || 'Farmer'}!</h1>
           <p className="text-primary/60 dark:text-sage text-base sm:text-lg">Continue your journey to agricultural excellence.</p>
         </div>
         
-        <div className="glass p-5 sm:p-6 rounded-2xl sm:rounded-3xl border-secondary/20 bg-secondary/5 w-full lg:min-w-[320px] lg:w-auto space-y-4">
+        <div className="glass p-5 sm:p-6 rounded-2xl sm:rounded-3xl border-secondary/20 bg-secondary/5 w-full md:min-w-[320px] md:w-auto space-y-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-secondary mb-1">Student ID Card</p>
             <div className="flex items-center gap-3">
@@ -221,8 +221,8 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="md:col-span-1 lg:col-span-2 space-y-12">
           {/* Admin Quick Actions */}
           {isAdmin && (
             <section className="space-y-6">

@@ -64,7 +64,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="pt-32 pb-32 max-w-7xl mx-auto px-6">
+    <div className="pt-20 md:pt-24 lg:pt-32 pb-32 max-w-7xl mx-auto px-6">
       <div className="text-center space-y-4 mb-20">
         <h1 className="text-5xl md:text-6xl font-display font-bold tracking-tight">Contact Us</h1>
         <p className="text-primary/60 dark:text-sage max-w-2xl mx-auto">

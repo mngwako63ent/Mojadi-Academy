@@ -130,7 +130,7 @@ const Login = () => {
   };
 
   return (
-    <div className="pt-32 pb-32 flex items-center justify-center px-6">
+    <div className="pt-20 md:pt-24 lg:pt-32 pb-32 flex items-center justify-center px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

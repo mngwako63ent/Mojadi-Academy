@@ -33,7 +33,7 @@ const Courses = () => {
   }, [search, category, level, courses]);
 
   return (
-    <div className="pt-24 pb-32 space-y-8 md:space-y-12 w-full max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="pt-20 md:pt-24 lg:pt-32 pb-32 space-y-8 md:space-y-12 w-full max-w-7xl mx-auto px-4 sm:px-6">
       <div className="space-y-3 md:space-y-4">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold leading-tight tracking-tight">Explore Our Courses</h1>
         <p className="text-base sm:text-lg text-primary/60 dark:text-sage max-w-2xl leading-relaxed">

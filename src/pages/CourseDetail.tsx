@@ -119,12 +119,12 @@ const CourseDetail = () => {
   };
 
   if (pricingLoading) {
-    return <div className="pt-32 pb-32 text-center">Loading course...</div>;
+    return <div className="pt-20 md:pt-24 lg:pt-32 pb-32 text-center">Loading course...</div>;
   }
 
   if (!course) {
     return (
-      <div className="pt-32 pb-32 text-center">
+      <div className="pt-20 md:pt-24 lg:pt-32 pb-32 text-center">
         <h2 className="text-3xl font-bold">Course not found</h2>
         <button onClick={() => navigate('/courses')} className="mt-4 text-secondary hover:underline">
           Back to Courses
@@ -146,11 +146,11 @@ const CourseDetail = () => {
   }
 
   if (loading) {
-    return <div className="pt-32 pb-32 text-center">Checking enrollment...</div>;
+    return <div className="pt-20 md:pt-24 lg:pt-32 pb-32 text-center">Checking enrollment...</div>;
   }
 
   return (
-    <div className="pt-24 pb-16 md:pt-32 md:pb-32 w-full max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="pt-20 md:pt-24 lg:pt-32 pb-16 md:pb-32 w-full max-w-7xl mx-auto px-4 sm:px-6">
       <button onClick={() => navigate('/courses')} className="flex items-center gap-2 text-primary/60 dark:text-sage hover:text-secondary transition-colors mb-6 md:mb-8 text-sm md:text-base">
         <ArrowLeft size={20} /> Back to Courses
       </button>
@@ -219,8 +219,8 @@ const CourseDetail = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-6 md:space-y-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="md:col-span-1 lg:col-span-2 space-y-6 md:space-y-8">
             <div className="glass p-5 sm:p-8 rounded-2xl sm:rounded-[2rem]">
               <h3 className="text-xl md:text-2xl font-bold mb-6">What You'll Learn</h3>
               <ul className="space-y-3 sm:space-y-4">
